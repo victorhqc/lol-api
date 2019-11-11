@@ -7,5 +7,12 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-failure = "0.1.6"
-hyper = "0.12.35"
+chrono = { version = "0.4", features = ["serde"] }
+futures = "0.1"
+failure = "0.1"
+hyper = "0.12"
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"
+dotenv = "0.15.0"
+dotenv_codegen = "0.15.0"
