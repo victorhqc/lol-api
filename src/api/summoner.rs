@@ -1,12 +1,9 @@
 use chrono::prelude::*;
-use hyper::Client;
 use hyper::rt::{Future, Stream};
 use failure::Error;
 use serde_derive::{Deserialize, Serialize};
 
-use crate::api::Api;
-
-pub const SUMMONER_API_PATH: &'static str = "/lol/summoner/v4/summoners";
+use crate::api::{Api, HttpsClient};
 
 pub struct SummonerApi<'a> {
     api: &'a Api,
@@ -14,18 +11,17 @@ pub struct SummonerApi<'a> {
 
 impl<'a> SummonerApi<'a> {
     pub fn by_name(&self, name: &String) -> impl Future<Item=Summoner, Error=Error> {
-        let path = String::from(format!("{}{}{}", SUMMONER_API_PATH, "/by-name", name));
-
+        let path = get_summoner_path("/by-name", name);
         let url = self.api.get_url(path);
-        get_summoner(url)
+
+        get_summoner(&self.api.client, url)
     }
 }
 
 pub fn get_summoner(
+    client: &HttpsClient,
     url: hyper::Uri,
 ) -> impl Future<Item=Summoner, Error=Error> {
-    let client = Client::new();
-
     client
         .get(url)
         .and_then(|res| {
@@ -49,4 +45,9 @@ pub struct Summoner {
     profile_icon_id: u16,
     revision_date: u32,
     summoner_level: NaiveDateTime,
+}
+
+pub const SUMMONER_API_PATH: &'static str = "/lol/summoner/v4/summoners";
+fn get_summoner_path(route: &str, param: &String) -> String {
+    String::from(format!("{}{}{}", SUMMONER_API_PATH, route, param))
 }
