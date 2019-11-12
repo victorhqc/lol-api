@@ -4,7 +4,7 @@ use failure::Error;
 use hyper::rt::{Future, Stream};
 use hyper::Method;
 use log::debug;
-use serde_derive::{Deserialize, Serialize};
+use serde_derive::{Deserialize};
 
 use crate::api::Api;
 use crate::regions::WithHosts;
@@ -26,19 +26,45 @@ where
         summoner_id: &str,
     ) -> impl Future<Item = Vec<ChampionMastery>, Error = Error> {
         let path = get_champion_mastery_path("/by-summoner/", summoner_id);
-        self.get_champion_mastery(path)
+        let req = self.api.build_request(Method::GET, path).unwrap();
+
+        self.api
+            .client
+            .request(req)
+            .and_then(|res| res.into_body().concat2())
+            .from_err()
+            .and_then(|body| {
+                let value = serde_json::from_slice(&body)?;
+
+                debug!("{:?}", value);
+
+                Ok(value)
+            })
     }
 
     pub fn by_champion_id(
         &self,
         summoner_id: &str,
         champion_id: u32,
-    ) -> impl Future<Item = Vec<ChampionMastery>, Error = Error> {
+    ) -> impl Future<Item = ChampionMastery, Error = Error> {
         let path = String::from(format!(
             "{}{}{}{}{}",
             CHAMPION_MASTERY_PATH, "/by-summoner/", summoner_id, "/by-champion/", champion_id
         ));
-        self.get_champion_mastery(path)
+        let req = self.api.build_request(Method::GET, path).unwrap();
+
+        self.api
+            .client
+            .request(req)
+            .and_then(|res| res.into_body().concat2())
+            .from_err()
+            .and_then(|body| {
+                let value = serde_json::from_slice(&body)?;
+
+                debug!("{:?}", value);
+
+                Ok(value)
+            })
     }
 
     pub fn total_score(&self, summoner_id: &str) -> impl Future<Item = u32, Error = Error> {
@@ -64,29 +90,9 @@ where
                 Ok(score)
             })
     }
-
-    fn get_champion_mastery(
-        &self,
-        path: String,
-    ) -> impl Future<Item = Vec<ChampionMastery>, Error = Error> {
-        let req = self.api.build_request(Method::GET, path).unwrap();
-
-        self.api
-            .client
-            .request(req)
-            .and_then(|res| res.into_body().concat2())
-            .from_err()
-            .and_then(|body| {
-                let mastery = serde_json::from_slice(&body)?;
-
-                debug!("{:?}", mastery);
-
-                Ok(mastery)
-            })
-    }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ChampionMastery {
     pub chest_granted: bool,
