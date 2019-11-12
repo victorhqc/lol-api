@@ -1,7 +1,7 @@
 use crate::regions::WithHosts;
 use failure::Error;
 use hyper::rt::{Future, Stream};
-use hyper::{Body, Method, Request};
+use hyper::{Method};
 use serde_derive::{Deserialize, Serialize};
 use log::{debug};
 use chrono::{DateTime, Utc};
@@ -23,24 +23,42 @@ where
         Self { api }
     }
 
-    pub fn by_name(&self, name: &String) -> impl Future<Item = Summoner, Error = Error> {
+    pub fn by_name(&self, name: &str) -> impl Future<Item = Summoner, Error = Error> {
+        debug!("Summoner by name: {}", name);
         let path = get_summoner_path("/by-name/", name);
-        let req = self.api.build_request(Method::GET, path);
-        self.get_summoner(req.unwrap())
+        self.get_summoner(path)
     }
 
-    pub fn get_summoner(&self, req: Request<Body>) -> impl Future<Item = Summoner, Error = Error> {
+    pub fn by_account_id(&self, account_id: &str) -> impl Future<Item = Summoner, Error = Error> {
+        debug!("Summoner by account_id: {}", account_id);
+        let path = get_summoner_path("/by-account/", account_id);
+        self.get_summoner(path)
+    }
+
+    pub fn by_puuid(&self, puuid: &str) -> impl Future<Item = Summoner, Error = Error> {
+        debug!("Summoner by puuid: {}", puuid);
+        let path = get_summoner_path("/by-puuid", puuid);
+        self.get_summoner(path)
+    }
+
+    pub fn by_summoner_id(&self, id: &str) -> impl Future<Item = Summoner, Error = Error> {
+        debug!("Summoner by id: {}", id);
+        let path = get_summoner_path("/", id);
+        self.get_summoner(path)
+    }
+
+    pub fn get_summoner(&self, path: String) -> impl Future<Item = Summoner, Error = Error> {
+        let req = self.api.build_request(Method::GET, path).unwrap();
+
         self.api
             .client
             .request(req)
             .and_then(|res| res.into_body().concat2())
             .from_err()
             .and_then(|body| {
-                debug!("{:?}", body);
-
                 let summoner = serde_json::from_slice(&body)?;
 
-                debug!("SUMMONER! {:?}", summoner);
+                debug!("{:?}", summoner);
 
                 Ok(summoner)
             })
@@ -61,6 +79,6 @@ pub struct Summoner {
 }
 
 pub const SUMMONER_API_PATH: &'static str = "/lol/summoner/v4/summoners";
-fn get_summoner_path(route: &str, param: &String) -> String {
+fn get_summoner_path(route: &str, param: &str) -> String {
     String::from(format!("{}{}{}", SUMMONER_API_PATH, route, param))
 }
