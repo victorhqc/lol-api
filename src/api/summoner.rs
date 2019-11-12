@@ -9,41 +9,43 @@ use chrono::serde::ts_milliseconds;
 use crate::api::Api;
 use crate::regions::WithHosts;
 
-pub struct SummonerApi {}
+pub struct SummonerApi<'a, T> {
+    api: &'a Api<T>
+}
 
-impl SummonerApi {
-    pub fn new() -> Self {
-        Self { }
+impl<'a, T> SummonerApi<'a, T> where T: WithHosts {
+    pub fn new(api: &'a Api<T>) -> Self {
+        Self { api }
     }
 
-    pub fn by_name<T: WithHosts>(&self, api: &Api<T>, name: &str) -> impl Future<Item = Summoner, Error = Error> {
+    pub fn by_name(&self, name: &str) -> impl Future<Item = Summoner, Error = Error> {
         debug!("Summoner by name: {}", name);
         let path = get_summoner_path("/by-name/", name);
-        self.get_summoner(api, path)
+        self.get_summoner(path)
     }
 
-    pub fn by_account_id<T: WithHosts>(&self, api: &Api<T>, account_id: &str) -> impl Future<Item = Summoner, Error = Error> {
+    pub fn by_account_id(&self, account_id: &str) -> impl Future<Item = Summoner, Error = Error> {
         debug!("Summoner by account_id: {}", account_id);
         let path = get_summoner_path("/by-account/", account_id);
-        self.get_summoner(api, path)
+        self.get_summoner(path)
     }
 
-    pub fn by_puuid<T: WithHosts>(&self, api: &Api<T>, puuid: &str) -> impl Future<Item = Summoner, Error = Error> {
+    pub fn by_puuid(&self, puuid: &str) -> impl Future<Item = Summoner, Error = Error> {
         debug!("Summoner by puuid: {}", puuid);
         let path = get_summoner_path("/by-puuid/", puuid);
-        self.get_summoner(api, path)
+        self.get_summoner(path)
     }
 
-    pub fn by_summoner_id<T: WithHosts>(&self, api: &Api<T>, id: &str) -> impl Future<Item = Summoner, Error = Error> {
+    pub fn by_summoner_id(&self, id: &str) -> impl Future<Item = Summoner, Error = Error> {
         debug!("Summoner by id: {}", id);
         let path = get_summoner_path("/", id);
-        self.get_summoner(api, path)
+        self.get_summoner(path)
     }
 
-    fn get_summoner<T: WithHosts>(&self, api: &Api<T>, path: String) -> impl Future<Item = Summoner, Error = Error> {
-        let req = api.build_request(Method::GET, path).unwrap();
+    fn get_summoner(&self, path: String) -> impl Future<Item = Summoner, Error = Error> {
+        let req = self.api.build_request(Method::GET, path).unwrap();
 
-        api
+        self.api
             .client
             .request(req)
             .and_then(|res| res.into_body().concat2())

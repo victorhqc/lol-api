@@ -15,7 +15,6 @@ pub struct Api<T> {
     api_key: String,
     client: HttpsClient,
     platform: T,
-    pub summoner: SummonerApi,
 }
 
 impl<T> Api<T>
@@ -38,8 +37,12 @@ where
             api_key,
             platform,
             client,
-            summoner: SummonerApi::new(),
         }
+    }
+
+    pub fn summoners(&self) -> SummonerApi<T> {
+        let api = self.clone();
+        SummonerApi::new(api)
     }
 
     pub fn build_request(&self, method: Method, path: String) -> Result<Request<Body>> {
@@ -62,6 +65,17 @@ where
         format!("https://{}{}", self.platform.host(&self.api_host), path)
             .parse::<Uri>()
             .unwrap()
+    }
+}
+
+impl<T> Clone for Api<T> where T: Clone {
+    fn clone(&self) -> Self {
+        Self {
+            api_host: self.api_host.clone(),
+            api_key: self.api_key.clone(),
+            platform: self.platform.clone(),
+            client: self.client.clone(),
+        }
     }
 }
 
