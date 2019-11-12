@@ -7,14 +7,20 @@ use serde_derive::{Deserialize, Serialize};
 
 use crate::api::Api;
 
-pub struct SummonerApi<'a, T> {
-    api: &'a Api<T>,
+pub struct SummonerApi<T> {
+    api: Api<T>,
 }
 
-impl<'a, T> SummonerApi<'a, T>
+impl<T> SummonerApi<T>
 where
     T: WithHosts,
 {
+    pub fn new(api_key: String, platform: T, api_host: Option<String>) -> Self {
+        let api = Api::new(api_key, platform, api_host);
+
+        Self { api }
+    }
+
     pub fn by_name(&self, name: &String) -> impl Future<Item = Summoner, Error = Error> {
         let path = get_summoner_path("/by-name", name);
         let req = self.api.build_request(Method::GET, path);
