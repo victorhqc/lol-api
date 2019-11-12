@@ -50,8 +50,8 @@ where
     }
 
     fn get_uri(&self, path: String) -> Uri {
-        println!("{}{}", self.platform.host(&self.api_host), path);
-        format!("{}{}", self.platform.host(&self.api_host), path)
+        println!("https://{}{}", self.platform.host(&self.api_host), path);
+        format!("https://{}{}", self.platform.host(&self.api_host), path)
             .parse::<Uri>()
             .unwrap()
     }
