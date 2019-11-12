@@ -43,7 +43,8 @@ where
     }
 
     fn get_uri(&self, path: String) -> Uri {
-        format!("{}{}", self.platform.host(), path)
+        let hostname = dotenv!("RIOT_API_HOST", "api.riotgames.com");
+        format!("{}{}", self.platform.host(hostname), path)
             .parse::<Uri>()
             .unwrap()
     }

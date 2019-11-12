@@ -5,11 +5,11 @@ pub enum Regions {
 }
 
 impl WithHosts for Regions {
-    fn host(&self) -> String {
+    fn host(&self, hostname: &str) -> String {
         match *self {
-            Regions::Americas => format!("americas.{}", dotenv!("RIOT_API_HOST")),
-            Regions::Asia => format!("asia.{}", dotenv!("RIOT_API_HOST")),
-            Regions::Europe => format!("europe.{}", dotenv!("RIOT_API_HOST")),
+            Regions::Americas => format!("americas.{}", hostname),
+            Regions::Asia => format!("asia.{}", hostname),
+            Regions::Europe => format!("europe.{}", hostname),
         }
     }
 }
@@ -29,23 +29,23 @@ pub enum Platforms {
 }
 
 impl WithHosts for Platforms {
-    fn host(&self) -> String {
+    fn host(&self, hostname: &str) -> String {
         match *self {
-            Platforms::Br1 => format!("br1.{}", dotenv!("RIOT_API_HOST")),
-            Platforms::Eun1 => format!("eun1.{}", dotenv!("RIOT_API_HOST")),
-            Platforms::Euw1 => format!("euw1.{}", dotenv!("RIOT_API_HOST")),
-            Platforms::Jp1 => format!("jp1.{}", dotenv!("RIOT_API_HOST")),
-            Platforms::Kr => format!("kr.{}", dotenv!("RIOT_API_HOST")),
-            Platforms::La1 => format!("la1.{}", dotenv!("RIOT_API_HOST")),
-            Platforms::La2 => format!("la2.{}", dotenv!("RIOT_API_HOST")),
-            Platforms::Na1 => format!("na1.{}", dotenv!("RIOT_API_HOST")),
-            Platforms::Oc1 => format!("oc1.{}", dotenv!("RIOT_API_HOST")),
-            Platforms::Tr1 => format!("tr1.{}", dotenv!("RIOT_API_HOST")),
-            Platforms::Ru => format!("ru.{}", dotenv!("RIOT_API_HOST")),
+            Platforms::Br1 => format!("br1.{}", hostname),
+            Platforms::Eun1 => format!("eun1.{}", hostname),
+            Platforms::Euw1 => format!("euw1.{}", hostname),
+            Platforms::Jp1 => format!("jp1.{}", hostname),
+            Platforms::Kr => format!("kr.{}", hostname),
+            Platforms::La1 => format!("la1.{}", hostname),
+            Platforms::La2 => format!("la2.{}", hostname),
+            Platforms::Na1 => format!("na1.{}", hostname),
+            Platforms::Oc1 => format!("oc1.{}", hostname),
+            Platforms::Tr1 => format!("tr1.{}", hostname),
+            Platforms::Ru => format!("ru.{}", hostname),
         }
     }
 }
 
 pub trait WithHosts {
-    fn host(&self) -> String;
+    fn host(&self, hostname: &str) -> String;
 }
