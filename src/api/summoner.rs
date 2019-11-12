@@ -1,43 +1,42 @@
+use chrono::serde::ts_milliseconds;
+use chrono::{DateTime, Utc};
 use failure::Error;
 use hyper::rt::{Future, Stream};
-use hyper::{Method};
+use hyper::Method;
+use log::debug;
 use serde_derive::{Deserialize, Serialize};
-use log::{debug};
-use chrono::{DateTime, Utc};
-use chrono::serde::ts_milliseconds;
 
 use crate::api::Api;
 use crate::regions::WithHosts;
 
 pub struct SummonerApi<'a, T> {
-    api: &'a Api<T>
+    api: &'a Api<T>,
 }
 
-impl<'a, T> SummonerApi<'a, T> where T: WithHosts {
+impl<'a, T> SummonerApi<'a, T>
+where
+    T: WithHosts,
+{
     pub fn new(api: &'a Api<T>) -> Self {
         Self { api }
     }
 
     pub fn by_name(&self, name: &str) -> impl Future<Item = Summoner, Error = Error> {
-        debug!("Summoner by name: {}", name);
         let path = get_summoner_path("/by-name/", name);
         self.get_summoner(path)
     }
 
     pub fn by_account_id(&self, account_id: &str) -> impl Future<Item = Summoner, Error = Error> {
-        debug!("Summoner by account_id: {}", account_id);
         let path = get_summoner_path("/by-account/", account_id);
         self.get_summoner(path)
     }
 
     pub fn by_puuid(&self, puuid: &str) -> impl Future<Item = Summoner, Error = Error> {
-        debug!("Summoner by puuid: {}", puuid);
         let path = get_summoner_path("/by-puuid/", puuid);
         self.get_summoner(path)
     }
 
     pub fn by_summoner_id(&self, id: &str) -> impl Future<Item = Summoner, Error = Error> {
-        debug!("Summoner by id: {}", id);
         let path = get_summoner_path("/", id);
         self.get_summoner(path)
     }

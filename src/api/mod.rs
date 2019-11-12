@@ -1,4 +1,7 @@
+mod champion_mastery;
 mod summoner;
+
+pub use self::champion_mastery::*;
 pub use self::summoner::*;
 
 use crate::regions::WithHosts;
@@ -8,7 +11,7 @@ use hyper::header::HeaderValue;
 use hyper::rt::Future;
 use hyper::{Body, Client, Method, Request, Uri};
 use hyper_tls::HttpsConnector;
-use log::{debug};
+use log::debug;
 
 pub struct Api<T> {
     api_host: String,
@@ -45,6 +48,11 @@ where
         SummonerApi::new(api)
     }
 
+    pub fn champion_mastery(&self) -> ChampionMasteryApi<T> {
+        let api = self.clone();
+        ChampionMasteryApi::new(api)
+    }
+
     pub fn build_request(&self, method: Method, path: String) -> Result<Request<Body>> {
         let uri = self.get_uri(path);
         debug!("{}: {}", method, uri);
@@ -68,7 +76,10 @@ where
     }
 }
 
-impl<T> Clone for Api<T> where T: Clone {
+impl<T> Clone for Api<T>
+where
+    T: Clone,
+{
     fn clone(&self) -> Self {
         Self {
             api_host: self.api_host.clone(),
