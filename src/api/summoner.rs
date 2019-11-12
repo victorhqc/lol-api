@@ -36,6 +36,8 @@ where
             .and_then(|body| {
                 let summoner = serde_json::from_slice(&body)?;
 
+                println!("SUMMONER! {:?}", summoner);
+
                 Ok(summoner)
             })
     }
