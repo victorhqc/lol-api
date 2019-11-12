@@ -1,8 +1,8 @@
 #[macro_use]
 extern crate dotenv_codegen;
 
-pub mod regions;
 pub mod api;
+pub mod regions;
 
 #[cfg(test)]
 mod tests {
