@@ -8,6 +8,7 @@ use hyper::header::HeaderValue;
 use hyper::rt::Future;
 use hyper::{Body, Client, Method, Request, Uri};
 use hyper_tls::HttpsConnector;
+use log::{debug};
 
 pub struct Api<T> {
     api_host: String,
@@ -29,6 +30,8 @@ where
             None => String::from("api.riotgames.com"),
         };
 
+        debug!("API HOST: {}", api_host);
+
         Self {
             api_host,
             api_key,
@@ -39,6 +42,8 @@ where
 
     pub fn build_request(&self, method: Method, path: String) -> Result<Request<Body>> {
         let uri = self.get_uri(path);
+        debug!("Building request with uri: {}", uri);
+
         let mut req = Request::new(Body::empty());
         *req.method_mut() = method;
         *req.uri_mut() = uri;

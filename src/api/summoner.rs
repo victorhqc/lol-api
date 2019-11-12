@@ -4,6 +4,7 @@ use failure::Error;
 use hyper::rt::{Future, Stream};
 use hyper::{Body, Method, Request};
 use serde_derive::{Deserialize, Serialize};
+use log::{debug};
 
 use crate::api::Api;
 
@@ -34,9 +35,11 @@ where
             .and_then(|res| res.into_body().concat2())
             .from_err()
             .and_then(|body| {
+                debug!("{:?}", body);
+
                 let summoner = serde_json::from_slice(&body)?;
 
-                println!("SUMMONER! {:?}", summoner);
+                debug!("SUMMONER! {:?}", summoner);
 
                 Ok(summoner)
             })
