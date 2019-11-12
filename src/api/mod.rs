@@ -15,6 +15,7 @@ pub struct Api<T> {
     api_key: String,
     client: HttpsClient,
     platform: T,
+    pub summoner: SummonerApi,
 }
 
 impl<T> Api<T>
@@ -37,6 +38,7 @@ where
             api_key,
             platform,
             client,
+            summoner: SummonerApi::new(),
         }
     }
 
