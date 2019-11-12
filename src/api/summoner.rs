@@ -22,7 +22,7 @@ where
     }
 
     pub fn by_name(&self, name: &String) -> impl Future<Item = Summoner, Error = Error> {
-        let path = get_summoner_path("/by-name", name);
+        let path = get_summoner_path("/by-name/", name);
         let req = self.api.build_request(Method::GET, path);
         self.get_summoner(req.unwrap())
     }
