@@ -37,7 +37,7 @@ where
 
     pub fn by_puuid(&self, puuid: &str) -> impl Future<Item = Summoner, Error = Error> {
         debug!("Summoner by puuid: {}", puuid);
-        let path = get_summoner_path("/by-puuid", puuid);
+        let path = get_summoner_path("/by-puuid/", puuid);
         self.get_summoner(path)
     }
 
