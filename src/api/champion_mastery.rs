@@ -32,7 +32,7 @@ where
     pub fn by_champion_id(
         &self,
         summoner_id: &str,
-        champion_id: &str,
+        champion_id: u32,
     ) -> impl Future<Item = Vec<ChampionMastery>, Error = Error> {
         let path = String::from(format!(
             "{}{}{}{}{}",
