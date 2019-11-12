@@ -10,6 +10,7 @@ use hyper::{Body, Client, Method, Request, Uri};
 use hyper_tls::HttpsConnector;
 
 pub struct Api<T> {
+    api_host: String,
     api_key: String,
     client: HttpsClient,
     platform: T,
@@ -19,11 +20,17 @@ impl<T> Api<T>
 where
     T: WithHosts,
 {
-    pub fn new(api_key: String, platform: T) -> Self {
+    pub fn new(api_key: String, platform: T, api_host: Option<String>) -> Self {
         let https = HttpsConnector::new(4).unwrap();
         let client = Client::builder().build::<_, hyper::Body>(https);
 
+        let api_host = match api_host {
+            Some(h) => h,
+            None => String::from("api.riotgames.com"),
+        };
+
         Self {
+            api_host,
             api_key,
             platform,
             client,
@@ -43,8 +50,7 @@ where
     }
 
     fn get_uri(&self, path: String) -> Uri {
-        let hostname = dotenv!("RIOT_API_HOST", "api.riotgames.com");
-        format!("{}{}", self.platform.host(hostname), path)
+        format!("{}{}", self.platform.host(&self.api_host), path)
             .parse::<Uri>()
             .unwrap()
     }

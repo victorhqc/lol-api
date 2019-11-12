@@ -1,6 +1,3 @@
-#[macro_use]
-extern crate dotenv_codegen;
-
 pub mod api;
 pub mod regions;
 
