@@ -1,9 +1,10 @@
 use chrono::prelude::*;
 use hyper::rt::{Future, Stream};
+use hyper::{Method, Request, Body};
 use failure::Error;
 use serde_derive::{Deserialize, Serialize};
 
-use crate::api::{Api, HttpsClient};
+use crate::api::{Api};
 
 pub struct SummonerApi<'a> {
     api: &'a Api,
@@ -12,27 +13,26 @@ pub struct SummonerApi<'a> {
 impl<'a> SummonerApi<'a> {
     pub fn by_name(&self, name: &String) -> impl Future<Item=Summoner, Error=Error> {
         let path = get_summoner_path("/by-name", name);
-        let url = self.api.get_url(path);
-
-        get_summoner(&self.api.client, url)
+        let req = self.api.build_request(Method::GET, path);
+        self.get_summoner(req.unwrap())
     }
-}
 
-pub fn get_summoner(
-    client: &HttpsClient,
-    url: hyper::Uri,
-) -> impl Future<Item=Summoner, Error=Error> {
-    client
-        .get(url)
-        .and_then(|res| {
-            res.into_body().concat2()
-        })
-        .from_err()
-        .and_then(|body| {
-            let summoner = serde_json::from_slice(&body)?;
+    pub fn get_summoner(
+        &self,
+        req: Request<Body>,
+    ) -> impl Future<Item=Summoner, Error=Error> {
+        self.api.client
+            .request(req)
+            .and_then(|res| {
+                res.into_body().concat2()
+            })
+            .from_err()
+            .and_then(|body| {
+                let summoner = serde_json::from_slice(&body)?;
 
-            Ok(summoner)
-        })
+                Ok(summoner)
+            })
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]

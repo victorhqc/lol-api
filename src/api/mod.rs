@@ -1,9 +1,10 @@
 mod summoner;
 pub use self::summoner::*;
 
-use hyper::{Client, Uri};
+use hyper::{Client, Uri, Request, Method, Body};
 use hyper::rt::Future;
 use hyper::client::HttpConnector;
+use hyper::header::HeaderValue;
 use hyper_tls::HttpsConnector;
 use failure::Error;
 use crate::regions::{WithHosts, Platforms};
@@ -27,7 +28,21 @@ impl Api {
         }
     }
 
-    pub fn get_url(&self, path: String) -> Uri {
+    pub fn build_request(&self, method: Method, path: String) -> Result<Request<Body>> {
+        let uri = self.get_uri(path);
+        let mut req = Request::new(Body::empty());
+        *req.method_mut() = method;
+        *req.uri_mut() = uri;
+
+        req.headers_mut().insert(
+            "X-Riot-Token",
+            HeaderValue::from_str(&self.api_key)?,
+        );
+
+        Ok(req)
+    }
+
+    fn get_uri(&self, path: String) -> Uri {
         format!("{}{}", self.platform.host(), path).parse::<Uri>().unwrap()
     }
 }
