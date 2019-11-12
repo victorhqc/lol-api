@@ -47,7 +47,7 @@ where
         self.get_summoner(path)
     }
 
-    pub fn get_summoner(&self, path: String) -> impl Future<Item = Summoner, Error = Error> {
+    fn get_summoner(&self, path: String) -> impl Future<Item = Summoner, Error = Error> {
         let req = self.api.build_request(Method::GET, path).unwrap();
 
         self.api
@@ -68,14 +68,14 @@ where
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct Summoner {
-    id: String,
-    account_id: String,
-    puuid: String,
-    name: String,
-    profile_icon_id: u16,
-    summoner_level: u16,
+    pub id: String,
+    pub account_id: String,
+    pub puuid: String,
+    pub name: String,
+    pub profile_icon_id: u16,
+    pub summoner_level: u16,
     #[serde(with = "ts_milliseconds")]
-    revision_date: DateTime<Utc>,
+    pub revision_date: DateTime<Utc>,
 }
 
 pub const SUMMONER_API_PATH: &'static str = "/lol/summoner/v4/summoners";
