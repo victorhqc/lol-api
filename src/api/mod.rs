@@ -42,7 +42,7 @@ where
 
     pub fn build_request(&self, method: Method, path: String) -> Result<Request<Body>> {
         let uri = self.get_uri(path);
-        debug!("Building request with uri: {}", uri);
+        debug!("{}: {}", method, uri);
 
         let mut req = Request::new(Body::empty());
         *req.method_mut() = method;
@@ -51,11 +51,12 @@ where
         req.headers_mut()
             .insert("X-Riot-Token", HeaderValue::from_str(&self.api_key)?);
 
+        debug!("{:?}", req);
+
         Ok(req)
     }
 
     fn get_uri(&self, path: String) -> Uri {
-        println!("https://{}{}", self.platform.host(&self.api_host), path);
         format!("https://{}{}", self.platform.host(&self.api_host), path)
             .parse::<Uri>()
             .unwrap()
