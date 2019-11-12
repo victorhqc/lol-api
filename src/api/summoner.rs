@@ -3,14 +3,15 @@ use hyper::rt::{Future, Stream};
 use hyper::{Method, Request, Body};
 use failure::Error;
 use serde_derive::{Deserialize, Serialize};
+use crate::regions::{WithHosts};
 
 use crate::api::{Api};
 
-pub struct SummonerApi<'a> {
-    api: &'a Api,
+pub struct SummonerApi<'a, T> {
+    api: &'a Api<T>,
 }
 
-impl<'a> SummonerApi<'a> {
+impl<'a, T> SummonerApi<'a, T> where T: WithHosts {
     pub fn by_name(&self, name: &String) -> impl Future<Item=Summoner, Error=Error> {
         let path = get_summoner_path("/by-name", name);
         let req = self.api.build_request(Method::GET, path);

@@ -7,16 +7,16 @@ use hyper::client::HttpConnector;
 use hyper::header::HeaderValue;
 use hyper_tls::HttpsConnector;
 use failure::Error;
-use crate::regions::{WithHosts, Platforms};
+use crate::regions::{WithHosts};
 
-pub struct Api {
+pub struct Api<T> {
     api_key: String,
     client: HttpsClient,
-    platform: Platforms,
+    platform: T,
 }
 
-impl Api {
-    pub fn new(api_key: String, platform: Platforms) -> Self {
+impl<T> Api<T> where T: WithHosts {
+    pub fn new(api_key: String, platform: T) -> Self {
         let https = HttpsConnector::new(4).unwrap();
         let client = Client::builder()
             .build::<_, hyper::Body>(https);
