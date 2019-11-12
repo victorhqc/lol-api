@@ -54,8 +54,8 @@ pub struct Summoner {
     puuid: String,
     name: String,
     profile_icon_id: u16,
-    revision_date: u32,
-    summoner_level: NaiveDateTime,
+    summoner_level: u16,
+    revision_date: NaiveDateTime,
 }
 
 pub const SUMMONER_API_PATH: &'static str = "/lol/summoner/v4/summoners";
