@@ -1,10 +1,11 @@
 use crate::regions::WithHosts;
-use chrono::prelude::*;
 use failure::Error;
 use hyper::rt::{Future, Stream};
 use hyper::{Body, Method, Request};
 use serde_derive::{Deserialize, Serialize};
 use log::{debug};
+use chrono::{DateTime, Utc};
+use chrono::serde::ts_milliseconds;
 
 use crate::api::Api;
 
@@ -55,7 +56,8 @@ pub struct Summoner {
     name: String,
     profile_icon_id: u16,
     summoner_level: u16,
-    revision_date: NaiveDateTime,
+    #[serde(with = "ts_milliseconds")]
+    revision_date: DateTime<Utc>,
 }
 
 pub const SUMMONER_API_PATH: &'static str = "/lol/summoner/v4/summoners";
