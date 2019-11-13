@@ -1,10 +1,8 @@
 use chrono::serde::ts_milliseconds;
 use chrono::{DateTime, Utc};
 use failure::Error;
-use hyper::rt::{Future, Stream};
-use hyper::Method;
-use log::debug;
-use serde_derive::{Deserialize};
+use hyper::rt::Future;
+use serde_derive::Deserialize;
 
 use crate::api::Api;
 use crate::regions::WithHosts;
@@ -26,20 +24,7 @@ where
         summoner_id: &str,
     ) -> impl Future<Item = Vec<ChampionMastery>, Error = Error> {
         let path = get_champion_mastery_path("/by-summoner/", summoner_id);
-        let req = self.api.build_request(Method::GET, path).unwrap();
-
-        self.api
-            .client
-            .request(req)
-            .and_then(|res| res.into_body().concat2())
-            .from_err()
-            .and_then(|body| {
-                let value = serde_json::from_slice(&body)?;
-
-                debug!("{:?}", value);
-
-                Ok(value)
-            })
+        self.api.client_request::<Vec<ChampionMastery>>(path)
     }
 
     pub fn by_champion_id(
@@ -51,44 +36,16 @@ where
             "{}{}{}{}{}",
             CHAMPION_MASTERY_PATH, "/by-summoner/", summoner_id, "/by-champion/", champion_id
         ));
-        let req = self.api.build_request(Method::GET, path).unwrap();
-
-        self.api
-            .client
-            .request(req)
-            .and_then(|res| res.into_body().concat2())
-            .from_err()
-            .and_then(|body| {
-                let value = serde_json::from_slice(&body)?;
-
-                debug!("{:?}", value);
-
-                Ok(value)
-            })
+        self.api.client_request::<ChampionMastery>(path)
     }
 
     pub fn total_score(&self, summoner_id: &str) -> impl Future<Item = u32, Error = Error> {
         let path = String::from(format!(
             "{}{}{}",
-            SCORE_MASTERY_PATH,
-            "/by-summoner/",
-            summoner_id,
+            SCORE_MASTERY_PATH, "/by-summoner/", summoner_id,
         ));
 
-        let req = self.api.build_request(Method::GET, path).unwrap();
-
-        self.api
-            .client
-            .request(req)
-            .and_then(|res| res.into_body().concat2())
-            .from_err()
-            .and_then(|body| {
-                let score = serde_json::from_slice(&body)?;
-
-                debug!("{:?}", score);
-
-                Ok(score)
-            })
+        self.api.client_request::<u32>(path)
     }
 }
 

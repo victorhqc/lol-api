@@ -1,9 +1,7 @@
 use chrono::serde::ts_milliseconds;
 use chrono::{DateTime, Utc};
 use failure::Error;
-use hyper::rt::{Future, Stream};
-use hyper::Method;
-use log::debug;
+use hyper::rt::Future;
 use serde_derive::{Deserialize, Serialize};
 
 use crate::api::Api;
@@ -23,39 +21,22 @@ where
 
     pub fn by_name(&self, name: &str) -> impl Future<Item = Summoner, Error = Error> {
         let path = get_summoner_path("/by-name/", name);
-        self.get_summoner(path)
+        self.api.client_request::<Summoner>(path)
     }
 
     pub fn by_account_id(&self, account_id: &str) -> impl Future<Item = Summoner, Error = Error> {
         let path = get_summoner_path("/by-account/", account_id);
-        self.get_summoner(path)
+        self.api.client_request::<Summoner>(path)
     }
 
     pub fn by_puuid(&self, puuid: &str) -> impl Future<Item = Summoner, Error = Error> {
         let path = get_summoner_path("/by-puuid/", puuid);
-        self.get_summoner(path)
+        self.api.client_request::<Summoner>(path)
     }
 
     pub fn by_summoner_id(&self, id: &str) -> impl Future<Item = Summoner, Error = Error> {
         let path = get_summoner_path("/", id);
-        self.get_summoner(path)
-    }
-
-    fn get_summoner(&self, path: String) -> impl Future<Item = Summoner, Error = Error> {
-        let req = self.api.build_request(Method::GET, path).unwrap();
-
-        self.api
-            .client
-            .request(req)
-            .and_then(|res| res.into_body().concat2())
-            .from_err()
-            .and_then(|body| {
-                let summoner = serde_json::from_slice(&body)?;
-
-                debug!("{:?}", summoner);
-
-                Ok(summoner)
-            })
+        self.api.client_request::<Summoner>(path)
     }
 }
 

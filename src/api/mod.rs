@@ -8,10 +8,12 @@ use crate::regions::WithHosts;
 use failure::Error;
 use hyper::client::HttpConnector;
 use hyper::header::HeaderValue;
-use hyper::rt::Future;
+use hyper::rt::{Future, Stream};
 use hyper::{Body, Client, Method, Request, Uri};
 use hyper_tls::HttpsConnector;
 use log::debug;
+use serde::Deserialize;
+use std::fmt::Debug;
 
 pub struct Api<T> {
     api_host: String,
@@ -73,6 +75,25 @@ where
         format!("https://{}{}", self.platform.host(&self.api_host), path)
             .parse::<Uri>()
             .unwrap()
+    }
+
+    fn client_request<'a, V: Debug>(&self, path: String) -> impl Future<Item = V, Error = Error>
+    where
+        for<'de> V: Deserialize<'de> + 'a,
+    {
+        let req = self.build_request(Method::GET, path).unwrap();
+
+        self.client
+            .request(req)
+            .and_then(|res| res.into_body().concat2())
+            .map_err(Error::from)
+            .and_then(|chunk| {
+                let data = serde_json::from_slice(&chunk)?;
+                debug!("{:?}", data);
+
+                Ok(data)
+            })
+            .from_err()
     }
 }
 
