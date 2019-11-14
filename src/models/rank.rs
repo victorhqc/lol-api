@@ -5,71 +5,64 @@ use serde::{
 use std::fmt;
 use std::str::FromStr;
 
-pub enum Tier {
-    Iron,
-    Bronze,
-    Silver,
-    Gold,
-    Platinum,
-    Diamond,
-    Master,
-    GrandMaster,
-    Challenger,
+pub enum Rank {
+    I,
+    II,
+    III,
+    IV,
+    V,
 }
 
-impl Tier {
+impl Rank {
     pub fn value(&self) -> &'static str {
         match *self {
-            Tier::Iron => "IRON",
-            Tier::Bronze => "BRONZE",
-            Tier::Silver => "SILVER",
-            Tier::Gold => "GOLD",
-            Tier::Platinum => "PLATINUM",
-            Tier::Diamond => "DIAMOND",
-            Tier::Master => "MASTER",
-            Tier::GrandMaster => "GRAND_MASTER",
-            Tier::Challenger => "CHALLENGER",
+            Rank::I => "I",
+            Rank::II => "II",
+            Rank::III => "III",
+            Rank::IV => "IV",
+            Rank::V => "V",
         }
     }
 }
 
-impl fmt::Display for Tier {
+impl fmt::Display for Rank {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str(self.value())
     }
 }
 
-impl fmt::Debug for Tier {
+impl fmt::Debug for Rank {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str(self.value())
     }
 }
 
-impl FromStr for Tier {
-    type Err = TierError;
+impl FromStr for Rank {
+    type Err = RankError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_ref() {
-            "iron" => Ok(Tier::Iron),
-            "bronze" => Ok(Tier::Bronze),
-            "silver" => Ok(Tier::Silver),
-            "gold" => Ok(Tier::Gold),
-            "platinum" => Ok(Tier::Platinum),
-            "diamond" => Ok(Tier::Diamond),
-            "master" => Ok(Tier::Master),
-            "grand_master" => Ok(Tier::GrandMaster),
-            "challenger" => Ok(Tier::Challenger),
-            other => Err(TierError::InvalidTier {
+            "i" => Ok(Rank::I),
+            "ii" => Ok(Rank::II),
+            "iii" => Ok(Rank::III),
+            "iv" => Ok(Rank::IV),
+            "v" => Ok(Rank::V),
+            "1" => Ok(Rank::I),
+            "2" => Ok(Rank::II),
+            "3" => Ok(Rank::III),
+            "4" => Ok(Rank::IV),
+            "5" => Ok(Rank::V),
+            other => Err(RankError::InvalidRank {
                 value: other.to_owned(),
             }),
         }
     }
 }
 
-struct TierVisitor;
+struct RankVisitor;
 
-impl<'de> Visitor<'de> for TierVisitor {
-    type Value = Tier;
+impl<'de> Visitor<'de> for RankVisitor {
+    type Value = Rank;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         formatter.write_str("a tier value expected")
@@ -80,7 +73,7 @@ impl<'de> Visitor<'de> for TierVisitor {
         E: de::Error,
     {
         value
-            .parse::<Tier>()
+            .parse::<Rank>()
             .map_err(|err| de::Error::custom(err.to_string()))
     }
 
@@ -92,7 +85,7 @@ impl<'de> Visitor<'de> for TierVisitor {
     }
 }
 
-impl Serialize for Tier {
+impl Serialize for Rank {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -101,17 +94,17 @@ impl Serialize for Tier {
     }
 }
 
-impl<'de> Deserialize<'de> for Tier {
+impl<'de> Deserialize<'de> for Rank {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
-        deserializer.deserialize_any(TierVisitor)
+        deserializer.deserialize_any(RankVisitor)
     }
 }
 
 #[derive(Debug, Fail)]
-pub enum TierError {
+pub enum RankError {
     #[fail(display = "invalid tier: {}", value)]
-    InvalidTier { value: String },
+    InvalidRank { value: String },
 }

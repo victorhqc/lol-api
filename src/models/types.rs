@@ -2,7 +2,7 @@ use chrono::serde::ts_milliseconds;
 use chrono::{DateTime, Utc};
 use serde_derive::{Deserialize, Serialize};
 
-use super::Tier;
+use super::{Rank, Tier};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -47,6 +47,6 @@ pub struct League {
     pub wins: u32,
     pub losses: u32,
     pub veteran: bool,
-    // pub rank: Rank,
+    pub rank: Rank,
     pub tier: Tier,
 }
