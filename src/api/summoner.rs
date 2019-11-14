@@ -1,11 +1,9 @@
-use chrono::serde::ts_milliseconds;
-use chrono::{DateTime, Utc};
 use failure::Error;
 use hyper::rt::Future;
-use serde_derive::{Deserialize, Serialize};
 
 use crate::api::Api;
-use crate::regions::WithHosts;
+use crate::hosts::WithHosts;
+use crate::models::Summoner;
 
 pub struct SummonerApi<'a, T> {
     api: &'a Api<T>,
@@ -38,19 +36,6 @@ where
         let path = get_summoner_path("/", id);
         self.api.client_request::<Summoner>(path)
     }
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[serde(rename_all = "camelCase")]
-pub struct Summoner {
-    pub id: String,
-    pub account_id: String,
-    pub puuid: String,
-    pub name: String,
-    pub profile_icon_id: u16,
-    pub summoner_level: u16,
-    #[serde(with = "ts_milliseconds")]
-    pub revision_date: DateTime<Utc>,
 }
 
 pub const SUMMONER_API_PATH: &'static str = "/lol/summoner/v4/summoners";

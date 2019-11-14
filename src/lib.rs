@@ -1,5 +1,6 @@
 pub mod api;
-pub mod regions;
+pub mod hosts;
+pub mod models;
 
 #[cfg(test)]
 mod tests {

@@ -4,7 +4,7 @@ mod summoner;
 pub use self::champion_mastery::*;
 pub use self::summoner::*;
 
-use crate::regions::WithHosts;
+use crate::hosts::WithHosts;
 use failure::Error;
 use hyper::client::HttpConnector;
 use hyper::header::HeaderValue;
