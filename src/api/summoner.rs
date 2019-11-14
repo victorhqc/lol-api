@@ -1,9 +1,9 @@
 use failure::Error;
 use hyper::rt::Future;
 
-use crate::Api;
 use crate::hosts::WithHosts;
 use crate::models::Summoner;
+use crate::Api;
 
 use super::SUMMONER_API_PATH;
 

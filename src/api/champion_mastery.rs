@@ -1,9 +1,9 @@
 use failure::Error;
 use hyper::rt::Future;
 
-use crate::Api;
 use crate::hosts::WithHosts;
 use crate::models::ChampionMastery;
+use crate::Api;
 
 use super::{CHAMPION_MASTERY_PATH, SCORE_MASTERY_PATH};
 
