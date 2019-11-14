@@ -2,7 +2,7 @@ use chrono::serde::ts_milliseconds;
 use chrono::{DateTime, Utc};
 use serde_derive::{Deserialize, Serialize};
 
-use super::{Rank, Tier};
+use super::{Rank, Tier, Queue};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -38,13 +38,14 @@ pub struct ChampionRotation {
     pub max_new_player_level: u32,
 }
 
+
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct League {
+pub struct LeagueEntry {
     pub summoner_id: String,
     pub summoner_name: String,
     pub league_id: String,
-    pub queue_type: String,
+    pub queue_type: Queue,
     pub hot_streak: String,
     pub wins: u32,
     pub losses: u32,
@@ -54,4 +55,27 @@ pub struct League {
     pub veteran: bool,
     pub fresh_blood: bool,
     pub inactive: bool,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct LeagueItem {
+    pub summoner_id: String,
+    pub summoner_name: String,
+    pub hot_streak: String,
+    pub veteran: bool,
+    pub fresh_blood: bool,
+    pub inactive: bool,
+    pub rank: Rank,
+    pub league_points: u32,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct LeagueList {
+    pub league_id: String,
+    pub tier: Tier,
+    pub entries: Vec<LeagueItem>,
+    pub queue: Queue,
+    pub name: String,
 }

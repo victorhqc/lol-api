@@ -1,11 +1,9 @@
 use failure::Error;
 use hyper::rt::Future;
 
-use crate::hosts::WithHosts;
+use crate::api::{CHAMPION_MASTERY_PATH, SCORE_MASTERY_PATH};
 use crate::models::ChampionMastery;
-use crate::Api;
-
-use super::{CHAMPION_MASTERY_PATH, SCORE_MASTERY_PATH};
+use crate::{Api, WithHosts};
 
 pub struct ChampionMasteryApi<'a, T> {
     api: &'a Api<T>,
@@ -23,32 +21,25 @@ where
         &self,
         summoner_id: &str,
     ) -> impl Future<Item = Vec<ChampionMastery>, Error = Error> {
-        let path = get_champion_mastery_path("/by-summoner/", summoner_id);
-        self.api.client_request::<Vec<ChampionMastery>>(path)
+        let path = format!("{}/by-summoner/{}", CHAMPION_MASTERY_PATH, summoner_id);
+        self.api.client_request(path)
     }
 
-    pub fn by_champion_id(
+    pub fn by_summoners_champion(
         &self,
         summoner_id: &str,
         champion_id: u32,
     ) -> impl Future<Item = ChampionMastery, Error = Error> {
-        let path = String::from(format!(
-            "{}{}{}{}{}",
-            CHAMPION_MASTERY_PATH, "/by-summoner/", summoner_id, "/by-champion/", champion_id
-        ));
-        self.api.client_request::<ChampionMastery>(path)
+        let path = format!(
+            "{}/by-summoner/{}/by-champion/{}",
+            CHAMPION_MASTERY_PATH, summoner_id, champion_id,
+        );
+        self.api.client_request(path)
     }
 
     pub fn total_score(&self, summoner_id: &str) -> impl Future<Item = u32, Error = Error> {
-        let path = String::from(format!(
-            "{}{}{}",
-            SCORE_MASTERY_PATH, "/by-summoner/", summoner_id,
-        ));
+        let path = format!("{}/by-summoner/{}", SCORE_MASTERY_PATH, summoner_id,);
 
-        self.api.client_request::<u32>(path)
+        self.api.client_request(path)
     }
-}
-
-fn get_champion_mastery_path(route: &str, param: &str) -> String {
-    String::from(format!("{}{}{}", CHAMPION_MASTERY_PATH, route, param))
 }

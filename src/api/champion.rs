@@ -1,9 +1,8 @@
 use failure::Error;
 use hyper::rt::Future;
 
-use crate::hosts::WithHosts;
+use crate::{Api, WithHosts};
 use crate::models::ChampionRotation;
-use crate::Api;
 
 use super::CHAMPION_ROTATIONS_PATH;
 
@@ -21,6 +20,6 @@ where
 
     pub fn rotations(&self) -> impl Future<Item = ChampionRotation, Error = Error> {
         self.api
-            .client_request::<ChampionRotation>(CHAMPION_ROTATIONS_PATH.to_string())
+            .client_request(CHAMPION_ROTATIONS_PATH.to_string())
     }
 }

@@ -5,67 +5,59 @@ use serde::{
 use std::fmt;
 use std::str::FromStr;
 
-pub enum Rank {
-    I,
-    II,
-    III,
-    IV,
-    V,
+pub enum Queue {
+    RankedSolo5x5,
+    RankedTft,
+    RankedFlexSr,
+    RankedFlexIt,
 }
 
-impl Rank {
+impl Queue {
     pub fn value(&self) -> &'static str {
         match *self {
-            Rank::I => "I",
-            Rank::II => "II",
-            Rank::III => "III",
-            Rank::IV => "IV",
-            Rank::V => "V",
+            Queue::RankedSolo5x5 => "RANKED_SOLO_5x5",
+            Queue::RankedTft => "RANKED_TFT",
+            Queue::RankedFlexSr => "RANKED_FLEX_SR",
+            Queue::RankedFlexIt => "RANKED_FLEX_IT",
         }
     }
 }
 
-impl fmt::Display for Rank {
+impl fmt::Display for Queue {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str(self.value())
     }
 }
 
-impl fmt::Debug for Rank {
+impl fmt::Debug for Queue {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str(self.value())
     }
 }
 
-impl FromStr for Rank {
-    type Err = RankError;
+impl FromStr for Queue {
+    type Err = QueueError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_ref() {
-            "i" => Ok(Rank::I),
-            "ii" => Ok(Rank::II),
-            "iii" => Ok(Rank::III),
-            "iv" => Ok(Rank::IV),
-            "v" => Ok(Rank::V),
-            "1" => Ok(Rank::I),
-            "2" => Ok(Rank::II),
-            "3" => Ok(Rank::III),
-            "4" => Ok(Rank::IV),
-            "5" => Ok(Rank::V),
-            other => Err(RankError::InvalidRank {
+            "RANKED_SOLO_5x5" => Ok(Queue::RankedSolo5x5),
+            "RANKED_TFT" => Ok(Queue::RankedTft),
+            "RANKED_FLEX_SR" => Ok(Queue::RankedFlexSr),
+            "RANKED_FLEX_IT" => Ok(Queue::RankedFlexIt),
+            other => Err(QueueError::InvalidQueue {
                 value: other.to_owned(),
             }),
         }
     }
 }
 
-struct RankVisitor;
+struct QueueVisitor;
 
-impl<'de> Visitor<'de> for RankVisitor {
-    type Value = Rank;
+impl<'de> Visitor<'de> for QueueVisitor {
+    type Value = Queue;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("a rank value expected")
+        formatter.write_str("a queue value expected")
     }
 
     fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
@@ -73,7 +65,7 @@ impl<'de> Visitor<'de> for RankVisitor {
         E: de::Error,
     {
         value
-            .parse::<Rank>()
+            .parse::<Queue>()
             .map_err(|err| de::Error::custom(err.to_string()))
     }
 
@@ -85,7 +77,7 @@ impl<'de> Visitor<'de> for RankVisitor {
     }
 }
 
-impl Serialize for Rank {
+impl Serialize for Queue {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
@@ -94,17 +86,17 @@ impl Serialize for Rank {
     }
 }
 
-impl<'de> Deserialize<'de> for Rank {
+impl<'de> Deserialize<'de> for Queue {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
-        deserializer.deserialize_any(RankVisitor)
+        deserializer.deserialize_any(QueueVisitor)
     }
 }
 
 #[derive(Debug, Fail)]
-pub enum RankError {
-    #[fail(display = "invalid rank: {}", value)]
-    InvalidRank { value: String },
+pub enum QueueError {
+    #[fail(display = "invalid queue: {}", value)]
+    InvalidQueue { value: String },
 }

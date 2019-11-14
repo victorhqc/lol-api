@@ -2,13 +2,10 @@
 extern crate failure;
 
 mod api;
-mod hosts;
 pub mod models;
 
 pub use self::api::*;
-pub use self::hosts::*;
 
-use crate::hosts::WithHosts;
 use failure::Error;
 use hyper::client::HttpConnector;
 use hyper::header::HeaderValue;
@@ -59,6 +56,11 @@ where
         ChampionApi::new(api)
     }
 
+    pub fn league(&self) -> LeagueApi<T> {
+        let api = self.clone();
+        LeagueApi::new(api)
+    }
+
     pub fn champion_mastery(&self) -> ChampionMasteryApi<T> {
         let api = self.clone();
         ChampionMasteryApi::new(api)
@@ -81,7 +83,7 @@ where
     }
 
     fn get_uri(&self, path: String) -> Uri {
-        format!("https://{}{}", self.platform.host(&self.api_host), path)
+        format!("https://{}/{}", self.platform.host(&self.api_host), path)
             .parse::<Uri>()
             .unwrap()
     }
