@@ -40,10 +40,10 @@ impl FromStr for Queue {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_lowercase().as_ref() {
-            "RANKED_SOLO_5x5" => Ok(Queue::RankedSolo5x5),
-            "RANKED_TFT" => Ok(Queue::RankedTft),
-            "RANKED_FLEX_SR" => Ok(Queue::RankedFlexSr),
-            "RANKED_FLEX_IT" => Ok(Queue::RankedFlexIt),
+            "ranked_solo_5x5" => Ok(Queue::RankedSolo5x5),
+            "ranked_tft" => Ok(Queue::RankedTft),
+            "ranked_flex_sr" => Ok(Queue::RankedFlexSr),
+            "ranked_flex_it" => Ok(Queue::RankedFlexIt),
             other => Err(QueueError::InvalidQueue {
                 value: other.to_owned(),
             }),
