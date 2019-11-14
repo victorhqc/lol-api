@@ -62,7 +62,7 @@ pub struct LeagueEntry {
 pub struct LeagueItem {
     pub summoner_id: String,
     pub summoner_name: String,
-    pub hot_streak: String,
+    pub hot_streak: bool,
     pub veteran: bool,
     pub fresh_blood: bool,
     pub inactive: bool,
