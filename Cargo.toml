@@ -1,5 +1,5 @@
 [package]
-name = "lol"
+name = "lol-api"
 version = "0.1.0"
 authors = ["Victor Quiroz Castro <victorhqc@gmail.com>"]
 edition = "2018"
