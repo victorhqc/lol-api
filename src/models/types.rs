@@ -41,12 +41,17 @@ pub struct ChampionRotation {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct League {
-    pub queue_type: String,
+    pub summoner_id: String,
     pub summoner_name: String,
+    pub league_id: String,
+    pub queue_type: String,
     pub hot_streak: String,
     pub wins: u32,
     pub losses: u32,
-    pub veteran: bool,
     pub rank: Rank,
     pub tier: Tier,
+    pub league_points: u32,
+    pub veteran: bool,
+    pub fresh_blood: bool,
+    pub inactive: bool,
 }
