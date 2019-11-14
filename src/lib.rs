@@ -1,3 +1,6 @@
+#[macro_use]
+extern crate failure;
+
 mod api;
 mod hosts;
 pub mod models;
