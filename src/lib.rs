@@ -83,7 +83,7 @@ where
     }
 
     fn get_uri(&self, path: String) -> Uri {
-        format!("https://{}/{}", self.platform.host(&self.api_host), path)
+        format!("https://{}{}", self.platform.host(&self.api_host), path)
             .parse::<Uri>()
             .unwrap()
     }
