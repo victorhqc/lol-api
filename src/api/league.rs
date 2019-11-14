@@ -45,10 +45,16 @@ where
         self.api.client_request(path)
     }
 
+    pub fn leagues_by_id(&self, league_id: &str) -> impl Future<Item = LeagueList, Error = Error> {
+        let path = format!("{}/leagues/{}", LEAGUE_PATH, league_id);
+
+        self.api.client_request(path)
+    }
+
     pub fn entries_by_summoner_id(
         &self,
         summoner_id: &str,
-    ) -> impl Future<Item = LeagueEntry, Error = Error> {
+    ) -> impl Future<Item = Vec<LeagueEntry>, Error = Error> {
         let path = format!("{}/entries/by-summoner/{}", LEAGUE_PATH, summoner_id);
 
         self.api.client_request(path)
@@ -61,12 +67,6 @@ where
         rank: Rank,
     ) -> impl Future<Item = Vec<LeagueEntry>, Error = Error> {
         let path = format!("{}/entries/{}/{}/{}", LEAGUE_PATH, queue, tier, rank);
-
-        self.api.client_request(path)
-    }
-
-    pub fn by_id(&self, league_id: &str) -> impl Future<Item = LeagueList, Error = Error> {
-        let path = format!("{}/leagues/{}", LEAGUE_PATH, league_id);
 
         self.api.client_request(path)
     }
