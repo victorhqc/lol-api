@@ -36,7 +36,7 @@ where
         self.api.client_request(path)
     }
 
-    pub fn master_leagues_byqueue(
+    pub fn master_leagues_by_queue(
         &self,
         queue: Queue,
     ) -> impl Future<Item = LeagueList, Error = Error> {
