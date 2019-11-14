@@ -1,7 +1,7 @@
 use failure::Error;
 use hyper::rt::Future;
 
-use crate::api::Api;
+use crate::Api;
 use crate::hosts::WithHosts;
 use crate::models::ChampionMastery;
 
