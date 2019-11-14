@@ -1,5 +1,5 @@
 mod types;
-mod ranked_types;
+mod tier;
 
 pub use self::types::*;
-pub use self::ranked_types::*;
+pub use self::tier::*;
