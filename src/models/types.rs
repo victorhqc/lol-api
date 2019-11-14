@@ -46,7 +46,7 @@ pub struct LeagueEntry {
     pub summoner_name: String,
     pub league_id: String,
     pub queue_type: Queue,
-    pub hot_streak: String,
+    pub hot_streak: bool,
     pub wins: u32,
     pub losses: u32,
     pub rank: Rank,
