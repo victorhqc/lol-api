@@ -5,6 +5,8 @@ use crate::Api;
 use crate::hosts::WithHosts;
 use crate::models::Summoner;
 
+use super::SUMMONER_API_PATH;
+
 pub struct SummonerApi<'a, T> {
     api: &'a Api<T>,
 }
@@ -38,7 +40,6 @@ where
     }
 }
 
-pub const SUMMONER_API_PATH: &'static str = "/lol/summoner/v4/summoners";
 fn get_summoner_path(route: &str, param: &str) -> String {
     String::from(format!("{}{}{}", SUMMONER_API_PATH, route, param))
 }

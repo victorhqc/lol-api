@@ -51,6 +51,11 @@ where
         SummonerApi::new(api)
     }
 
+    pub fn champion(&self) -> ChampionApi<T> {
+        let api = self.clone();
+        ChampionApi::new(api)
+    }
+
     pub fn champion_mastery(&self) -> ChampionMasteryApi<T> {
         let api = self.clone();
         ChampionMasteryApi::new(api)
@@ -115,7 +120,6 @@ where
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 pub type FutureResult<T> = dyn Future<Item = T, Error = Error>;
 pub type HttpsClient = Client<HttpsConnector<HttpConnector>>;
-
 
 #[cfg(test)]
 mod tests {

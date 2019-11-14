@@ -5,6 +5,8 @@ use crate::Api;
 use crate::hosts::WithHosts;
 use crate::models::ChampionMastery;
 
+use super::{CHAMPION_MASTERY_PATH, SCORE_MASTERY_PATH};
+
 pub struct ChampionMasteryApi<'a, T> {
     api: &'a Api<T>,
 }
@@ -46,9 +48,6 @@ where
         self.api.client_request::<u32>(path)
     }
 }
-
-pub const CHAMPION_MASTERY_PATH: &'static str = "/lol/champion-mastery/v4/champion-masteries";
-pub const SCORE_MASTERY_PATH: &'static str = "/lol/champion-mastery/v4/scores";
 
 fn get_champion_mastery_path(route: &str, param: &str) -> String {
     String::from(format!("{}{}{}", CHAMPION_MASTERY_PATH, route, param))
