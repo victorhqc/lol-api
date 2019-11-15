@@ -3,10 +3,12 @@ extern crate failure;
 
 pub mod constants;
 pub mod endpoints;
+mod error;
 mod riot_api;
 
 pub mod models;
 
+pub use self::error::*;
 pub use self::riot_api::*;
 
 #[cfg(test)]

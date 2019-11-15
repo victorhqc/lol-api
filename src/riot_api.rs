@@ -5,9 +5,11 @@ use hyper::rt::{Future, Stream};
 use hyper::{Body, Client, Method, Request, Uri};
 use hyper_tls::HttpsConnector;
 use log::debug;
-use serde::Deserialize;
+use serde::de::DeserializeOwned;
 use std::fmt::Debug;
 
+// use crate::Result;
+use crate::FetchError;
 use crate::constants::WithHost;
 use crate::endpoints::{ChampionMasteryV4, ChampionV3, LeagueV4, SummonerV4};
 
@@ -65,17 +67,18 @@ impl RiotApi {
 
     pub fn get<'a, R, T>(&self, platform: T, path: String) -> impl Future<Item = R, Error = Error>
     where
-        R: Debug,
+        R: DeserializeOwned + Debug,
         T: WithHost,
-        for<'de> R: Deserialize<'de> + 'a,
     {
         let req = self.build_request(Method::GET, platform, path).unwrap();
 
         self.config
             .client
             .request(req)
-            .and_then(|res| res.into_body().concat2())
-            .map_err(Error::from)
+            .and_then(|res| {
+                res.into_body().concat2()
+            })
+            .from_err::<FetchError>()
             .and_then(|chunk| {
                 let data = serde_json::from_slice(&chunk)?;
                 debug!("{:?}", data);
