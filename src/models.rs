@@ -2,7 +2,7 @@ use chrono::serde::ts_milliseconds;
 use chrono::{DateTime, Utc};
 use serde_derive::{Deserialize, Serialize};
 
-use super::constants::{Rank, Tier, Queue};
+use super::constants::{Division, Tier, Queue};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -17,9 +17,10 @@ pub struct Summoner {
     pub revision_date: DateTime<Utc>,
 }
 
+/// This object contains single Champion Mastery information for player and champion combination.
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct ChampionMastery {
+pub struct ChampionMasteryDTO {
     pub chest_granted: bool,
     pub champion_level: u32,
     pub champion_id: u32,
@@ -32,7 +33,7 @@ pub struct ChampionMastery {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct ChampionRotation {
+pub struct ChampionInfo {
     pub free_champion_ids: Vec<u32>,
     pub free_chanpion_ids_for_new_players: Vec<u32>,
     pub max_new_player_level: u32,
@@ -49,7 +50,7 @@ pub struct LeagueEntry {
     pub hot_streak: bool,
     pub wins: u32,
     pub losses: u32,
-    pub rank: Rank,
+    pub rank: Division,
     pub tier: Tier,
     pub league_points: u32,
     pub veteran: bool,
@@ -66,13 +67,13 @@ pub struct LeagueItem {
     pub veteran: bool,
     pub fresh_blood: bool,
     pub inactive: bool,
-    pub rank: Rank,
+    pub rank: Division,
     pub league_points: u32,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct LeagueList {
+pub struct LeagueListDTO {
     pub league_id: String,
     pub tier: Tier,
     pub entries: Vec<LeagueItem>,

@@ -27,25 +27,34 @@ impl RiotApi {
         SummonerV4::new(self)
     }
 
-    pub fn champion(&self) -> ChampionV3 {
+    /// Handle for ChampionV3 endpoints.
+    ///
+    /// <a href="https://developer.riotgames.com/apis#champion-v3">Official API Documentation</a>
+    pub fn champion_v3(&self) -> ChampionV3 {
         ChampionV3::new(self)
     }
 
-    pub fn league(&self) -> LeagueV4 {
+    /// Handle for LeagueV4 endpoints.
+    ///
+    /// <a href="https://developer.riotgames.com/apis#league-v4">Official API Documentation</a>
+    pub fn league_v4(&self) -> LeagueV4 {
         LeagueV4::new(self)
     }
 
-    pub fn champion_mastery(&self) -> ChampionMasteryV4 {
+    /// Handle for ChampionMasteryV4 endpoints.
+    ///
+    /// <a href="https://developer.riotgames.com/apis#champion-mastery-v4">Official API Documentation</a>
+    pub fn champion_mastery_v4(&self) -> ChampionMasteryV4 {
         ChampionMasteryV4::new(self)
     }
 
     pub fn build_request<T: WithHost>(
         &self,
         method: Method,
-        platform: T,
+        region: T,
         path: String,
     ) -> Result<Request<Body>> {
-        let uri = self.forge_uri(platform, path);
+        let uri = self.forge_uri(region, path);
         debug!("{}: {}", method, uri);
 
         let mut req = Request::new(Body::empty());
@@ -60,18 +69,18 @@ impl RiotApi {
         Ok(req)
     }
 
-    fn forge_uri<T: WithHost>(&self, platform: T, path: String) -> Uri {
-        format!("https://{}{}", platform.host(&self.config.api_host), path)
+    fn forge_uri<T: WithHost>(&self, region: T, path: String) -> Uri {
+        format!("https://{}{}", region.host(&self.config.api_host), path)
             .parse::<Uri>()
             .unwrap()
     }
 
-    pub fn get<'a, R, T>(&self, platform: T, path: String) -> impl Future<Item = R, Error = Error>
+    pub fn get<'a, R, T>(&self, region: T, path: String) -> impl Future<Item = R, Error = Error>
     where
         R: DeserializeOwned + Debug,
         T: WithHost,
     {
-        let req = self.build_request(Method::GET, platform, path).unwrap();
+        let req = self.build_request(Method::GET, region, path).unwrap();
 
         self.config
             .client
