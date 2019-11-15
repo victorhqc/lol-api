@@ -3,17 +3,17 @@ use hyper::rt::Future;
 
 use crate::api::{CHAMPION_MASTERY_PATH, SCORE_MASTERY_PATH};
 use crate::models::ChampionMastery;
-use crate::{Api, WithHosts};
+use crate::{RiotApi, WithHosts};
 
 pub struct ChampionMasteryApi<'a, T> {
-    api: &'a Api<T>,
+    api: &'a RiotApi<T>,
 }
 
 impl<'a, T> ChampionMasteryApi<'a, T>
 where
     T: WithHosts,
 {
-    pub fn new(api: &'a Api<T>) -> Self {
+    pub fn new(api: &'a RiotApi<T>) -> Self {
         Self { api }
     }
 
@@ -22,7 +22,7 @@ where
         summoner_id: &str,
     ) -> impl Future<Item = Vec<ChampionMastery>, Error = Error> {
         let path = format!("{}/by-summoner/{}", CHAMPION_MASTERY_PATH, summoner_id);
-        self.api.client_request(path)
+        self.api.get(path)
     }
 
     pub fn by_summoners_champion(
@@ -34,12 +34,12 @@ where
             "{}/by-summoner/{}/by-champion/{}",
             CHAMPION_MASTERY_PATH, summoner_id, champion_id,
         );
-        self.api.client_request(path)
+        self.api.get(path)
     }
 
     pub fn total_score(&self, summoner_id: &str) -> impl Future<Item = u32, Error = Error> {
         let path = format!("{}/by-summoner/{}", SCORE_MASTERY_PATH, summoner_id,);
 
-        self.api.client_request(path)
+        self.api.get(path)
     }
 }
