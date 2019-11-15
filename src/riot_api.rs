@@ -1,4 +1,5 @@
 use failure::Error;
+use futures::future;
 use hyper::client::HttpConnector;
 use hyper::header::HeaderValue;
 use hyper::rt::{Future, Stream};
@@ -9,9 +10,9 @@ use serde::de::DeserializeOwned;
 use std::fmt::Debug;
 
 // use crate::Result;
-use crate::FetchError;
 use crate::constants::WithHost;
 use crate::endpoints::{ChampionMasteryV4, ChampionV3, LeagueV4, SummonerV4};
+use crate::{FetchError};
 
 pub struct RiotApi {
     config: RustApiConfig,
@@ -75,8 +76,13 @@ impl RiotApi {
         self.config
             .client
             .request(req)
+            .from_err::<FetchError>()
             .and_then(|res| {
-                res.into_body().concat2()
+                if !res.status().is_success() {
+                    future::Either::A(future::err(FetchError::Status(res.status())))
+                } else {
+                    future::Either::B(res.into_body().concat2().from_err())
+                }
             })
             .from_err::<FetchError>()
             .and_then(|chunk| {
