@@ -1,15 +1,15 @@
 use failure::Error;
 use hyper::rt::Future;
 
-use crate::api::{CHAMPION_MASTERY_PATH, SCORE_MASTERY_PATH};
+use super::{CHAMPION_MASTERY_PATH, SCORE_MASTERY_PATH};
 use crate::models::ChampionMastery;
 use crate::{RiotApi, WithHosts};
 
-pub struct ChampionMasteryApi<'a, T> {
+pub struct ChampionMasteryV4<'a, T> {
     api: &'a RiotApi<T>,
 }
 
-impl<'a, T> ChampionMasteryApi<'a, T>
+impl<'a, T> ChampionMasteryV4<'a, T>
 where
     T: WithHosts,
 {

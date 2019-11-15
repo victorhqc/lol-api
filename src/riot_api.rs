@@ -8,7 +8,7 @@ use log::debug;
 use serde::Deserialize;
 use std::fmt::Debug;
 
-use crate::api::{WithHosts, SummonerApi, ChampionApi, LeagueApi, ChampionMasteryApi};
+use crate::endpoints::{WithHosts, SummonerV4, ChampionV3, LeagueV4, ChampionMasteryV4};
 
 pub struct RiotApi<T> {
     api_host: String,
@@ -40,24 +40,24 @@ where
         }
     }
 
-    pub fn summoners(&self) -> SummonerApi<T> {
+    pub fn summoners(&self) -> SummonerV4<T> {
         let api = self.clone();
-        SummonerApi::new(api)
+        SummonerV4::new(api)
     }
 
-    pub fn champion(&self) -> ChampionApi<T> {
+    pub fn champion(&self) -> ChampionV3<T> {
         let api = self.clone();
-        ChampionApi::new(api)
+        ChampionV3::new(api)
     }
 
-    pub fn league(&self) -> LeagueApi<T> {
+    pub fn league(&self) -> LeagueV4<T> {
         let api = self.clone();
-        LeagueApi::new(api)
+        LeagueV4::new(api)
     }
 
-    pub fn champion_mastery(&self) -> ChampionMasteryApi<T> {
+    pub fn champion_mastery(&self) -> ChampionMasteryV4<T> {
         let api = self.clone();
-        ChampionMasteryApi::new(api)
+        ChampionMasteryV4::new(api)
     }
 
     pub fn build_request(&self, method: Method, path: String) -> Result<Request<Body>> {

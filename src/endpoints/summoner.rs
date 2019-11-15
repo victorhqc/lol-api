@@ -6,11 +6,11 @@ use crate::models::Summoner;
 
 use super::SUMMONER_API_PATH;
 
-pub struct SummonerApi<'a, T> {
+pub struct SummonerV4<'a, T> {
     api: &'a RiotApi<T>,
 }
 
-impl<'a, T> SummonerApi<'a, T>
+impl<'a, T> SummonerV4<'a, T>
 where
     T: WithHosts,
 {

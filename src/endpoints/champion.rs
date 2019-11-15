@@ -6,11 +6,11 @@ use crate::models::ChampionRotation;
 
 use super::CHAMPION_ROTATIONS_PATH;
 
-pub struct ChampionApi<'a, T> {
+pub struct ChampionV3<'a, T> {
     pub api: &'a RiotApi<T>,
 }
 
-impl<'a, T> ChampionApi<'a, T>
+impl<'a, T> ChampionV3<'a, T>
 where
     T: WithHosts,
 {

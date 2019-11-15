@@ -6,11 +6,11 @@ use crate::{RiotApi, WithHosts};
 
 use super::LEAGUE_PATH;
 
-pub struct LeagueApi<'a, T> {
+pub struct LeagueV4<'a, T> {
     pub api: &'a RiotApi<T>,
 }
 
-impl<'a, T> LeagueApi<'a, T>
+impl<'a, T> LeagueV4<'a, T>
 where
     T: WithHosts,
 {

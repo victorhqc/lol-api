@@ -1,12 +1,12 @@
 #[macro_use]
 extern crate failure;
 
-mod api;
+mod endpoints;
 pub mod models;
 
 mod riot_api;
 
-pub use self::api::*;
+pub use self::endpoints::*;
 pub use self::riot_api::*;
 
 #[cfg(test)]
