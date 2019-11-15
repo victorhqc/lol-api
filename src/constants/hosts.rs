@@ -4,7 +4,7 @@ pub enum Regions {
     Europe,
 }
 
-impl WithHosts for Regions {
+impl WithHost for Regions {
     fn host(&self, hostname: &str) -> String {
         match *self {
             Regions::Americas => format!("americas.{}", hostname),
@@ -28,7 +28,7 @@ pub enum Platforms {
     Ru,
 }
 
-impl WithHosts for Platforms {
+impl WithHost for Platforms {
     fn host(&self, hostname: &str) -> String {
         match *self {
             Platforms::Br1 => format!("br1.{}", hostname),
@@ -46,6 +46,6 @@ impl WithHosts for Platforms {
     }
 }
 
-pub trait WithHosts {
+pub trait WithHost {
     fn host(&self, hostname: &str) -> String;
 }

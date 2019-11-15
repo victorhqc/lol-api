@@ -8,61 +8,41 @@ use log::debug;
 use serde::Deserialize;
 use std::fmt::Debug;
 
-use crate::constants::WithHosts;
-use crate::endpoints::{SummonerV4, ChampionV3, LeagueV4, ChampionMasteryV4};
+use crate::constants::WithHost;
+use crate::endpoints::{ChampionMasteryV4, ChampionV3, LeagueV4, SummonerV4};
 
-pub struct RiotApi<T> {
-    api_host: String,
-    api_key: String,
-    client: HttpsClient,
-    platform: T,
+pub struct RiotApi {
+    config: RustApiConfig,
 }
 
-impl<T> RiotApi<T>
-where
-    T: WithHosts,
-{
-    pub fn new(api_key: String, platform: T, api_host: Option<String>) -> Self {
-        let https = HttpsConnector::new(4).unwrap();
-        let client = Client::builder().build::<_, hyper::Body>(https);
-
-        let api_host = match api_host {
-            Some(h) => h,
-            None => String::from("api.riotgames.com"),
-        };
-
-        debug!("API HOST: {}", api_host);
-
-        Self {
-            api_host,
-            api_key,
-            platform,
-            client,
-        }
+impl RiotApi {
+    pub fn new(config: RustApiConfig) -> Self {
+        Self { config }
     }
 
-    pub fn summoners(&self) -> SummonerV4<T> {
-        let api = self.clone();
-        SummonerV4::new(api)
+    pub fn summoners(&self) -> SummonerV4 {
+        SummonerV4::new(self)
     }
 
-    pub fn champion(&self) -> ChampionV3<T> {
-        let api = self.clone();
-        ChampionV3::new(api)
+    pub fn champion(&self) -> ChampionV3 {
+        ChampionV3::new(self)
     }
 
-    pub fn league(&self) -> LeagueV4<T> {
-        let api = self.clone();
-        LeagueV4::new(api)
+    pub fn league(&self) -> LeagueV4 {
+        LeagueV4::new(self)
     }
 
-    pub fn champion_mastery(&self) -> ChampionMasteryV4<T> {
-        let api = self.clone();
-        ChampionMasteryV4::new(api)
+    pub fn champion_mastery(&self) -> ChampionMasteryV4 {
+        ChampionMasteryV4::new(self)
     }
 
-    pub fn build_request(&self, method: Method, path: String) -> Result<Request<Body>> {
-        let uri = self.get_uri(path);
+    pub fn build_request<T: WithHost>(
+        &self,
+        method: Method,
+        platform: T,
+        path: String,
+    ) -> Result<Request<Body>> {
+        let uri = self.forge_uri(platform, path);
         debug!("{}: {}", method, uri);
 
         let mut req = Request::new(Body::empty());
@@ -70,26 +50,29 @@ where
         *req.uri_mut() = uri;
 
         req.headers_mut()
-            .insert("X-Riot-Token", HeaderValue::from_str(&self.api_key)?);
+            .insert("X-Riot-Token", HeaderValue::from_str(&self.config.api_key)?);
 
         debug!("{:?}", req);
 
         Ok(req)
     }
 
-    fn get_uri(&self, path: String) -> Uri {
-        format!("https://{}{}", self.platform.host(&self.api_host), path)
+    fn forge_uri<T: WithHost>(&self, platform: T, path: String) -> Uri {
+        format!("https://{}{}", platform.host(&self.config.api_host), path)
             .parse::<Uri>()
             .unwrap()
     }
 
-    pub fn get<'a, V: Debug>(&self, path: String) -> impl Future<Item = V, Error = Error>
+    pub fn get<'a, R, T>(&self, platform: T, path: String) -> impl Future<Item = R, Error = Error>
     where
-        for<'de> V: Deserialize<'de> + 'a,
+        R: Debug,
+        T: WithHost,
+        for<'de> R: Deserialize<'de> + 'a,
     {
-        let req = self.build_request(Method::GET, path).unwrap();
+        let req = self.build_request(Method::GET, platform, path).unwrap();
 
-        self.client
+        self.config
+            .client
             .request(req)
             .and_then(|res| res.into_body().concat2())
             .map_err(Error::from)
@@ -103,16 +86,26 @@ where
     }
 }
 
-impl<T> Clone for RiotApi<T>
-where
-    T: Clone,
-{
-    fn clone(&self) -> Self {
+pub struct RustApiConfig {
+    api_host: String,
+    api_key: String,
+    client: HttpsClient,
+}
+
+impl RustApiConfig {
+    pub fn new(api_key: String, api_host: Option<String>) -> Self {
+        let api_host = match api_host {
+            Some(h) => h,
+            None => String::from("api.riotgames.com"),
+        };
+
+        let https = HttpsConnector::new(4).unwrap();
+        let client = Client::builder().build::<_, hyper::Body>(https);
+
         Self {
-            api_host: self.api_host.clone(),
-            api_key: self.api_key.clone(),
-            platform: self.platform.clone(),
-            client: self.client.clone(),
+            api_host,
+            api_key,
+            client,
         }
     }
 }

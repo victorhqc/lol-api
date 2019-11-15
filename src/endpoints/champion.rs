@@ -1,23 +1,23 @@
 use failure::Error;
 use hyper::rt::Future;
 
-use crate::{constants::WithHosts, models::ChampionRotation, RiotApi};
+use crate::{constants::WithHost, models::ChampionRotation, RiotApi};
 
 use super::CHAMPION_ROTATIONS_PATH;
 
-pub struct ChampionV3<'a, T> {
-    pub api: &'a RiotApi<T>,
+pub struct ChampionV3<'a> {
+    pub api: &'a RiotApi,
 }
 
-impl<'a, T> ChampionV3<'a, T>
-where
-    T: WithHosts,
-{
-    pub fn new(api: &'a RiotApi<T>) -> Self {
+impl<'a> ChampionV3<'a> {
+    pub fn new(api: &'a RiotApi) -> Self {
         Self { api }
     }
 
-    pub fn rotations(&self) -> impl Future<Item = ChampionRotation, Error = Error> {
-        self.api.get(CHAMPION_ROTATIONS_PATH.to_string())
+    pub fn rotations<T: WithHost>(
+        &self,
+        platform: T,
+    ) -> impl Future<Item = ChampionRotation, Error = Error> {
+        self.api.get(platform, CHAMPION_ROTATIONS_PATH.to_string())
     }
 }
