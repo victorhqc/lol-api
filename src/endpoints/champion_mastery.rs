@@ -2,8 +2,7 @@ use failure::Error;
 use hyper::rt::Future;
 
 use super::{CHAMPION_MASTERY_PATH, SCORE_MASTERY_PATH};
-use crate::models::ChampionMastery;
-use crate::{RiotApi, WithHosts};
+use crate::{constants::WithHosts, models::ChampionMastery, RiotApi};
 
 pub struct ChampionMasteryV4<'a, T> {
     api: &'a RiotApi<T>,

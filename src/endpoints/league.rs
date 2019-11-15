@@ -1,8 +1,11 @@
 use failure::Error;
 use hyper::rt::Future;
 
-use crate::models::{LeagueEntry, LeagueList, Queue, Rank, Tier};
-use crate::{RiotApi, WithHosts};
+use crate::{
+    constants::{Queue, Rank, Tier, WithHosts},
+    models::{LeagueEntry, LeagueList},
+    RiotApi,
+};
 
 use super::LEAGUE_PATH;
 

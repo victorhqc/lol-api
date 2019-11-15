@@ -8,7 +8,8 @@ use log::debug;
 use serde::Deserialize;
 use std::fmt::Debug;
 
-use crate::endpoints::{WithHosts, SummonerV4, ChampionV3, LeagueV4, ChampionMasteryV4};
+use crate::constants::WithHosts;
+use crate::endpoints::{SummonerV4, ChampionV3, LeagueV4, ChampionMasteryV4};
 
 pub struct RiotApi<T> {
     api_host: String,

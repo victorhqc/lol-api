@@ -1,8 +1,7 @@
 use failure::Error;
 use hyper::rt::Future;
 
-use crate::{RiotApi, WithHosts};
-use crate::models::Summoner;
+use crate::{constants::WithHosts, models::Summoner, RiotApi};
 
 use super::SUMMONER_API_PATH;
 

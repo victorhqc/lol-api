@@ -2,7 +2,7 @@ use chrono::serde::ts_milliseconds;
 use chrono::{DateTime, Utc};
 use serde_derive::{Deserialize, Serialize};
 
-use super::{Rank, Tier, Queue};
+use super::constants::{Rank, Tier, Queue};
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
