@@ -23,7 +23,10 @@ impl RiotApi {
         Self { config }
     }
 
-    pub fn summoners(&self) -> SummonerV4 {
+    /// Handle for SummonerV4
+    ///
+    /// <a href="https://developer.riotgames.com/apis#summoner-v4">Official API Documentation</a>
+    pub fn summoner_v4(&self) -> SummonerV4 {
         SummonerV4::new(self)
     }
 

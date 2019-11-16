@@ -17,11 +17,12 @@ impl<'a> ChampionV3<'a> {
         Self { api }
     }
 
-    /// Returns champion rotations, including free-to-play and low-level free-to-play rotations (REST)
+    /// Returns champion rotations, including free-to-play and low-level free-to-play rotations
+    /// (REST)
     ///
-    /// <a href="https://developer.riotgames.com/apis#champion-v3/GET_getChampionInfo">Official API Documentation</a>
-    /// # Parameters
-    /// * `region` - Region to query.
+    /// <a href="https://developer.riotgames.com/apis#champion-v3/GET_getChampionInfo">
+    ///   Official API Documentation
+    /// </a>
     pub fn get_champion_info<T: WithHost>(
         &self,
         region: T,

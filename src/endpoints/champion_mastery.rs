@@ -18,10 +18,9 @@ impl<'a> ChampionMasteryV4<'a> {
 
     /// Get all champion mastery entries sorted by number of champion points descending
     ///
-    /// <a href="https://developer.riotgames.com/api-methods/#champion-mastery-v4/GET_getAllChampionMasteries">Official API Documentation</a>
-    /// # Parameters
-    /// * `region` - Region to query.
-    /// * `encrypted_summoner_id` - Summoner ID associated with the player
+    /// <a href="https://developer.riotgames.com/api-methods/#champion-mastery-v4/GET_getAllChampionMasteries">
+    ///   Official API Documentation
+    /// </a>
     pub fn get_all_champion_masteries<T: WithHost>(
         &self,
         region: T,
@@ -33,11 +32,9 @@ impl<'a> ChampionMasteryV4<'a> {
 
     /// Get a champion mastery by player ID and champion ID
     ///
-    /// <a href="https://developer.riotgames.com/apis#champion-mastery-v4/GET_getChampionMastery">Official API Documentation</a>
-    /// # Parameters
-    /// * `region` - Region to execute against
-    /// * `encrypted_summoner_id` - Summoner ID associated with the player
-    /// * `champion_id` - Champion ID for fetching mastery
+    /// <a href="https://developer.riotgames.com/apis#champion-mastery-v4/GET_getChampionMastery">
+    ///   Official API Documentation
+    /// </a>
     pub fn get_champion_mastery<T: WithHost>(
         &self,
         region: T,
@@ -51,12 +48,12 @@ impl<'a> ChampionMasteryV4<'a> {
         self.api.get(region, path)
     }
 
-    /// Get a player's total champion mastery score, which is the sum of individual champion mastery levels
+    /// Get a player's total champion mastery score, which is the sum of individual champion
+    /// mastery levels.
     ///
-    /// <a href="https://developer.riotgames.com/apis#champion-mastery-v4/GET_getChampionMasteryScore">Official API Documentation</a>
-    /// # Parameters
-    /// * `region` - Region to execute against
-    /// * `encrypted_summoner_id` - Summoner ID associated with the player
+    /// <a href="https://developer.riotgames.com/apis#champion-mastery-v4/GET_getChampionMasteryScore">
+    ///   Official API Documentation
+    /// </a>
     pub fn get_champion_mastery_score<T: WithHost>(
         &self,
         region: T,
