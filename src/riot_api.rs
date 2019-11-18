@@ -11,7 +11,7 @@ use std::fmt::Debug;
 
 // use crate::Result;
 use crate::constants::WithHost;
-use crate::endpoints::{ChampionMasteryV4, ChampionV3, LeagueV4, SummonerV4};
+use crate::endpoints::{ChampionMasteryV4, ChampionV3, LeagueV4, SummonerV4, MatchV4};
 use crate::{FetchError};
 
 pub struct RiotApi {
@@ -49,6 +49,13 @@ impl RiotApi {
     /// <a href="https://developer.riotgames.com/apis#champion-mastery-v4">Official API Documentation</a>
     pub fn champion_mastery_v4(&self) -> ChampionMasteryV4 {
         ChampionMasteryV4::new(self)
+    }
+
+    /// Handle for MatchV4 endpoints.
+    ///
+    /// <a href="https://developer.riotgames.com/apis#match-v4">Official API Documentation</a>
+    pub fn match_v4(&self) -> MatchV4 {
+        MatchV4::new(self)
     }
 
     pub fn build_request<T: WithHost>(
