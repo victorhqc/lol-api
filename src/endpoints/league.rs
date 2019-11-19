@@ -1,8 +1,11 @@
 use failure::Error;
 use hyper::rt::Future;
+use strum::IntoEnumIterator;
+use strum_macros::EnumIter;
+use url::form_urlencoded::Serializer;
 
 use crate::{
-    constants::{Queue, Division, Tier, WithHost},
+    constants::{Division, Queue, Tier, WithHost},
     models::{LeagueEntryDTO, LeagueListDTO},
     RiotApi,
 };
@@ -107,9 +110,31 @@ impl<'a> LeagueV4<'a> {
         queue: Queue,
         tier: Tier,
         division: Division,
+        parameters: GetLeagueEntriesParams,
     ) -> impl Future<Item = Vec<LeagueEntryDTO>, Error = Error> {
         let path = format!("{}/entries/{}/{}/{}", LEAGUE_PATH, queue, tier, division);
 
-        self.api.get(region, path)
+        let mut query_params = Serializer::new(String::new());
+        for parameter in LeagueParams::iter() {
+            match parameter {
+                LeagueParams::Page => match &parameters.page {
+                    Some(page) => {
+                        query_params.append_pair("page", &page.to_string());
+                    }
+                    None => {}
+                }
+            }
+        }
+
+        self.api.get_with_params(region, path, query_params.finish())
     }
+}
+
+pub struct GetLeagueEntriesParams {
+    page: Option<u32>,
+}
+
+#[derive(EnumIter, Debug)]
+enum LeagueParams {
+    Page,
 }
