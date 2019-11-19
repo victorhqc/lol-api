@@ -7,3 +7,16 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+clap = "2.33"
+failure = "0.1"
+futures = "0.1"
+hyper = "0.12"
+dotenv = "0.15"
+hyper-tls = "0.3"
+log = "0.4"
+pretty_env_logger = "0.2"
+serde = "1.0"
+serde_derive = "1.0"
+serde_json = "1.0"
+tokio = "0.1"
+url = "2.1"
