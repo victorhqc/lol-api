@@ -6,7 +6,7 @@ use url::form_urlencoded::Serializer;
 
 use crate::{
     constants::{Queue, WithHost},
-    models::{MatchDTO, MatchlistDTO},
+    models::{MatchDTO, MatchTimelineDTO, MatchlistDTO},
     RiotApi,
 };
 
@@ -132,12 +132,27 @@ impl<'a> MatchV4<'a> {
                         query_params.append_pair("endTime", &end_time.to_string());
                     }
                     None => {}
-                }
+                },
             };
         }
 
         self.api
             .get_with_params(region, path, query_params.finish())
+    }
+
+    /// Get match timeline by match ID.
+    ///
+    /// <a href="https://developer.riotgames.com/apis#match-v4/GET_getMatchTimeline">
+    ///   Official API Documentation
+    /// </a>
+    pub fn get_match_timeline<T: WithHost>(
+        &self,
+        region: T,
+        match_id: &str,
+    ) -> impl Future<Item = MatchTimelineDTO, Error = Error> {
+        let path = format!("{}/timelines/by-match/{}", MATCH_V4_PATH, match_id,);
+
+        self.api.get(region, path)
     }
 }
 

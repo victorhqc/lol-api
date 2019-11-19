@@ -2,7 +2,7 @@ use chrono::serde::ts_milliseconds;
 use chrono::{DateTime, Utc};
 use serde_derive::{Deserialize, Serialize};
 
-use super::constants::{Division, Tier, Queue};
+use super::constants::{Division, Queue, Tier};
 
 /// Represents a summoner
 #[derive(Serialize, Deserialize, Debug)]
@@ -62,7 +62,6 @@ pub struct ChampionInfo {
     pub max_new_player_level: u32,
 }
 
-
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct LeagueEntryDTO {
@@ -83,7 +82,7 @@ pub struct LeagueEntryDTO {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct LeagueItemDTO  {
+pub struct LeagueItemDTO {
     pub summoner_id: String,
     pub summoner_name: String,
     pub hot_streak: bool,
@@ -379,7 +378,7 @@ pub struct ParticipantStatsDTO {
     pub penta_kills: u32,
     pub total_heal: u64,
     pub total_minions_killed: u32,
-    pub time_c_c_ing_others: u64
+    pub time_c_c_ing_others: u64,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -392,7 +391,26 @@ pub struct RuneDTO {
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct ParticipantTimelineDTO {
-
+    /// Participant's calculated lane. MID and BOT are legacy values. (Legal values: MID, MIDDLE,
+    /// TOP, JUNGLE, BOT, BOTTOM)
+    pub lane: String, // TODO IMPLEMENT CONSTANT
+    pub participant_id: u32,
+    /// Creep score difference versus the calculated lane opponent(s) for a specified period.
+    pub cs_diff_per_min_deltas: (String, f32),
+    /// Gold for a specified period.
+    pub gold_per_min_deltas: (String, f32),
+    /// Experience difference versus the calculated lane opponent(s) for a specified period.
+    pub xp_diff_per_min_deltas: (String, f32),
+    /// Creeps for a specified period.
+    pub creeps_per_min_deltas: (String, f32),
+    /// Experience change for a specified period.
+    pub xp_per_min_deltas: (String, f32),
+    /// Participant's calculated role. (Legal values: DUO, NONE, SOLO, DUO_CARRY, DUO_SUPPORT)
+    pub role: String, // TODO IMPLEMENT CONSTANT
+    /// Damage taken difference versus the calculated lane opponent(s) for a specified period.
+    pub damage_taken_diff_per_min_deltas: (String, f32),
+    /// Damage taken for a specified period.
+    pub damage_taken_per_min_deltas: (String, f32),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -400,4 +418,72 @@ pub struct ParticipantTimelineDTO {
 pub struct MasteryDTO {
     pub mastery_id: u32,
     pub rank: Division,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct MatchTimelineDTO {
+    pub frames: Vec<MatchFrameDTO>,
+    pub frame_interval: u64,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct MatchFrameDTO {
+    pub timestamp: u64,
+    pub participant_frames: (String, MatchParticipantFrameDTO),
+    pub events: Vec<MatchEventDTO>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct MatchParticipantFrameDTO {
+    pub total_gold: u32,
+    pub team_score: u32,
+    pub participant_id: u32,
+    pub level: u32,
+    pub current_gold: u32,
+    pub minions_killed: u32,
+    pub dominion_score: u32,
+    pub position: MatchPositionDTO,
+    pub xp: u32,
+    pub jungle_minions_killed: u32,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct MatchPositionDTO {
+    pub y: u32,
+    pub x: u32,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct MatchEventDTO {
+    pub event_type: String,
+    pub tower_type: String,
+    pub team_id: u32,
+    pub ascended_type: String,
+    pub killer_id: u32,
+    pub level_up_type: String,
+    pub point_captured: String,
+    pub assisting_participant_ids: Vec<u32>,
+    pub ward_type: String,
+    pub monster_type: String,
+    /// (Legal values: CHAMPION_KILL, WARD_PLACED, WARD_KILL, BUILDING_KILL, ELITE_MONSTER_KILL,
+    /// ITEM_PURCHASED, ITEM_SOLD, ITEM_DESTROYED, ITEM_UNDO, SKILL_LEVEL_UP, ASCENDED_EVENT,
+    /// CAPTURE_POINT, PORO_KING_SUMMON)
+    pub r#type: String, // TODO IMPLEMENT CONSTANT
+    pub skill_slot: u32,
+    pub victim_id: u32,
+    pub timestamp: u64,
+    pub after_id: u32,
+    pub monster_sub_type: String,
+    pub lane_type: String,
+    pub item_id: u32,
+    pub participant_id: u32,
+    pub building_type: String,
+    pub creator_id: u32,
+    pub position: MatchPositionDTO,
+    pub before_id: u32,
 }
