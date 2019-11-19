@@ -106,6 +106,15 @@ pub struct LeagueListDTO {
 
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
+pub struct MatchlistDTO {
+    pub matches: Vec<MatchDTO>,
+    pub total_games: u32,
+    pub start_index: u32,
+    pub end_index: u32,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
 pub struct MatchDTO {
     ///  Please refer to the Game Constants documentation.
     pub season_id: u32,

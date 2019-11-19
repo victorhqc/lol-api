@@ -8,11 +8,11 @@ use hyper_tls::HttpsConnector;
 use log::debug;
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
+use url::Url;
 
-// use crate::Result;
 use crate::constants::WithHost;
-use crate::endpoints::{ChampionMasteryV4, ChampionV3, LeagueV4, SummonerV4, MatchV4};
-use crate::{FetchError};
+use crate::endpoints::{ChampionMasteryV4, ChampionV3, LeagueV4, MatchV4, SummonerV4};
+use crate::FetchError;
 
 pub struct RiotApi {
     config: RustApiConfig,
@@ -63,8 +63,14 @@ impl RiotApi {
         method: Method,
         region: T,
         path: String,
+        params: Vec<(String, String)>,
     ) -> Result<Request<Body>> {
-        let uri = self.forge_uri(region, path);
+        let parsed_params: Vec<(&str, &str)> = params
+            .iter()
+            .map(|p| (p.0.as_ref(), p.1.as_ref()))
+            .collect();
+
+        let uri = self.forge_uri(region, path, parsed_params)?;
         debug!("{}: {}", method, uri);
 
         let mut req = Request::new(Body::empty());
@@ -79,10 +85,30 @@ impl RiotApi {
         Ok(req)
     }
 
-    fn forge_uri<T: WithHost>(&self, region: T, path: String) -> Uri {
-        format!("https://{}{}", region.host(&self.config.api_host), path)
-            .parse::<Uri>()
-            .unwrap()
+    fn forge_uri<T: WithHost>(
+        &self,
+        region: T,
+        path: String,
+        params: Vec<(&str, &str)>,
+    ) -> std::result::Result<Uri, Error> {
+        let path = format!("https://{}{}", region.host(&self.config.api_host), path);
+        let url = Url::parse_with_params(&path, &params)?;
+        let uri = url.into_string().parse::<Uri>()?;
+
+        Ok(uri)
+    }
+
+    pub fn get_with_params<'a, R, T>(
+        &self,
+        region: T,
+        path: String,
+        params: Vec<(String, String)>,
+    ) -> impl Future<Item = R, Error = Error>
+    where
+        R: DeserializeOwned + Debug,
+        T: WithHost,
+    {
+        self.get_data(region, path, params)
     }
 
     pub fn get<'a, R, T>(&self, region: T, path: String) -> impl Future<Item = R, Error = Error>
@@ -90,7 +116,22 @@ impl RiotApi {
         R: DeserializeOwned + Debug,
         T: WithHost,
     {
-        let req = self.build_request(Method::GET, region, path).unwrap();
+        self.get_data(region, path, Vec::new())
+    }
+
+    fn get_data<'a, R, T>(
+        &self,
+        region: T,
+        path: String,
+        params: Vec<(String, String)>,
+    ) -> impl Future<Item = R, Error = Error>
+    where
+        R: DeserializeOwned + Debug,
+        T: WithHost,
+    {
+        let req = self
+            .build_request(Method::GET, region, path, params)
+            .unwrap();
 
         self.config
             .client
