@@ -1,8 +1,9 @@
 use failure::Error;
 use hyper::rt::Future;
+use url::form_urlencoded::Serializer;
 
 use crate::{
-    constants::{WithHost, Queue},
+    constants::{Queue, WithHost},
     models::{MatchDTO, MatchlistDTO},
     RiotApi,
 };
@@ -49,10 +50,7 @@ impl<'a> MatchV4<'a> {
         region: T,
         match_id: &str,
     ) -> impl Future<Item = MatchDTO, Error = Error> {
-        let path = format!(
-            "{}/matches/{}",
-            MATCH_V4_PATH, match_id,
-        );
+        let path = format!("{}/matches/{}", MATCH_V4_PATH, match_id,);
 
         self.api.get(region, path)
     }
@@ -93,26 +91,29 @@ impl<'a> MatchV4<'a> {
             MATCH_V4_PATH, encrypted_account_id
         );
 
-        let mut parsed_parameters: Vec<(String, String)> = Vec::new();
-        match parameters.champion {
-            Some(champion) => {
-                let parsed_champions: String = champion
-                    .iter()
-                    .map(|c| Into::<i32>::into(*c).to_string())
-                    .collect();
-
-                parsed_parameters.push((String::from("champion"), parsed_champions));
+        let mut query_params = Serializer::new(String::new());
+        match parameters.champions {
+            Some(champions) => {
+                query_params.extend_pairs(champions.iter().map(|c| ("champion", c.to_string())));
             }
             None => {}
         };
 
-        self.api.get_with_params(region, path, parsed_parameters)
+        match parameters.queues {
+            Some(queues) => {
+                query_params.extend_pairs(queues.iter().map(|q| ("queue", q.to_string())));
+            }
+            None => {}
+        };
+
+        self.api
+            .get_with_params(region, path, query_params.finish())
     }
 }
 
 pub struct GetMatchlistParameters {
-    pub champion: Option<Vec<i32>>, // TODO: Implement Champion constant
-    pub queue: Option<Vec<Queue>>,
+    pub champions: Option<Vec<i32>>, // TODO: Implement Champion constant
+    pub queues: Option<Vec<Queue>>,
     pub end_time: Option<u64>,
     pub begin_time: Option<u64>,
     pub end_index: Option<u64>,

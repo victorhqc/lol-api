@@ -8,7 +8,6 @@ use hyper_tls::HttpsConnector;
 use log::debug;
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
-use url::Url;
 
 use crate::constants::WithHost;
 use crate::endpoints::{ChampionMasteryV4, ChampionV3, LeagueV4, MatchV4, SummonerV4};
@@ -63,14 +62,9 @@ impl RiotApi {
         method: Method,
         region: T,
         path: String,
-        params: Vec<(String, String)>,
+        params: String,
     ) -> Result<Request<Body>> {
-        let parsed_params: Vec<(&str, &str)> = params
-            .iter()
-            .map(|p| (p.0.as_ref(), p.1.as_ref()))
-            .collect();
-
-        let uri = self.forge_uri(region, path, parsed_params)?;
+        let uri = self.forge_uri(region, path, params)?;
         debug!("{}: {}", method, uri);
 
         let mut req = Request::new(Body::empty());
@@ -89,11 +83,15 @@ impl RiotApi {
         &self,
         region: T,
         path: String,
-        params: Vec<(&str, &str)>,
+        params: String,
     ) -> std::result::Result<Uri, Error> {
-        let path = format!("https://{}{}", region.host(&self.config.api_host), path);
-        let url = Url::parse_with_params(&path, &params)?;
-        let uri = url.into_string().parse::<Uri>()?;
+        let uri = format!(
+            "https://{}{}?{}",
+            region.host(&self.config.api_host),
+            path,
+            params
+        )
+        .parse::<Uri>()?;
 
         Ok(uri)
     }
@@ -102,7 +100,7 @@ impl RiotApi {
         &self,
         region: T,
         path: String,
-        params: Vec<(String, String)>,
+        params: String,
     ) -> impl Future<Item = R, Error = Error>
     where
         R: DeserializeOwned + Debug,
@@ -116,14 +114,14 @@ impl RiotApi {
         R: DeserializeOwned + Debug,
         T: WithHost,
     {
-        self.get_data(region, path, Vec::new())
+        self.get_data(region, path, String::from(""))
     }
 
     fn get_data<'a, R, T>(
         &self,
         region: T,
         path: String,
-        params: Vec<(String, String)>,
+        params: String,
     ) -> impl Future<Item = R, Error = Error>
     where
         R: DeserializeOwned + Debug,
