@@ -44,7 +44,7 @@ impl ToDescriptor for SeasonList {
             .iter()
             .map(|season| {
                 ConstantEnum {
-                    key: season.season.clone(),
+                    key: season.season.replace(" ", "_").clone(),
                     value: season.season.clone(),
                 }
             })

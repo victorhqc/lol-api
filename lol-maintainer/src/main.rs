@@ -1,9 +1,6 @@
 #[macro_use]
 extern crate failure;
 
-#[macro_use]
-extern crate serde_json;
-
 pub mod endpoints;
 mod error;
 mod fetch;
@@ -40,7 +37,8 @@ fn main() {
                         reg.register_template_file(
                             "constant_file",
                             "./lol-maintainer/src/partials/constants.hbs",
-                        );
+                        )
+                        .unwrap();
 
                         let seasons_request = api.constants().get_seasons();
 
@@ -54,7 +52,7 @@ fn main() {
                                 }
 
                                 let r = reg.render("constant_file", &seasons.descriptor()).unwrap();
-                                println!("file??\n{}", r);
+                                println!("{}", r);
 
                                 Ok(())
                             })

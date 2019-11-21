@@ -8,7 +8,7 @@ use std::str::FromStr;
 pub enum {{name}} {
     {{#each enums as |enum| ~}}
     {{enum.key}},
-    {{/each~}}
+    {{/each}}
 }
 
 impl {{name}} {
@@ -16,7 +16,7 @@ impl {{name}} {
         match *self {
             {{#each enums as |enum| ~}}
             {{../name}}::{{enum.key}} => "{{enum.value}}",
-            {{/each~}}
+            {{/each}}
         }
     }
 }
@@ -39,7 +39,7 @@ impl FromStr for {{name}} {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.as_ref() {
             {{#each enums as |enum| ~}}
-            {{enum.value}} => Ok({{../name}}::{{enum.key}}),
+            "{{enum.value}}" => Ok({{../name}}::{{enum.key}}),
             {{/each~}}
             other => Err({{name}}Error::Invalid{{name}} {
                 value: other.to_owned(),
