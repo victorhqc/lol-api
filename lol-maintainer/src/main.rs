@@ -6,10 +6,12 @@ mod error;
 mod fetch;
 mod files;
 
+mod my_file;
+
 pub use self::error::*;
 pub use self::fetch::*;
 
-use files::parse_file_template;
+use files::{parse_file_template, write_file};
 
 use std::env;
 
@@ -42,9 +44,10 @@ fn main() {
 
                                 let r = parse_file_template(
                                     "./lol-maintainer/src/partials/constants.hbs",
-                                    seasons,
+                                    &seasons,
                                 );
                                 println!("{}", r);
+                                write_file(&seasons, r);
 
                                 Ok(())
                             })
