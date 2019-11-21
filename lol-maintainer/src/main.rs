@@ -4,18 +4,18 @@ extern crate failure;
 pub mod endpoints;
 mod error;
 mod fetch;
+mod files;
 
 pub use self::error::*;
 pub use self::fetch::*;
 
-use endpoints::ToDescriptor;
+use files::parse_file_template;
+
 use std::env;
 
 use clap::{
     crate_authors, crate_description, crate_name, crate_version, App, AppSettings, Arg, SubCommand,
 };
-// use failure::Error;
-use handlebars::Handlebars;
 use hyper::rt::{lazy, Future};
 use log::debug;
 
@@ -33,13 +33,6 @@ fn main() {
             match constants {
                 Some(_) => {
                     tokio::run(lazy(move || {
-                        let mut reg = Handlebars::new();
-                        reg.register_template_file(
-                            "constant_file",
-                            "./lol-maintainer/src/partials/constants.hbs",
-                        )
-                        .unwrap();
-
                         let seasons_request = api.constants().get_seasons();
 
                         seasons_request
@@ -47,11 +40,10 @@ fn main() {
                             .and_then(move |seasons| {
                                 println!("Found {} seasons", seasons.items.len());
 
-                                for season in seasons.items.iter() {
-                                    println!("{:?}", season);
-                                }
-
-                                let r = reg.render("constant_file", &seasons.descriptor()).unwrap();
+                                let r = parse_file_template(
+                                    "./lol-maintainer/src/partials/constants.hbs",
+                                    seasons,
+                                );
                                 println!("{}", r);
 
                                 Ok(())
