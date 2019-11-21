@@ -1,0 +1,99 @@
+use serde::{
+    de::{self, Visitor},
+    Deserialize, Deserializer, Serialize, Serializer,
+};
+use std::fmt;
+use std::str::FromStr;
+
+pub enum {{name}} {
+    {{#each enums as |enum| ~}}
+    {{enum.key}},
+    {{/each~}}
+}
+
+impl {{name}} {
+    pub fn value(&self) -> &'static str {
+        match *self {
+            {{#each enums as |enum| ~}}
+            {{../name}}::{{enum.key}} => "{{enum.value}}",
+            {{/each~}}
+        }
+    }
+}
+
+impl fmt::Display for {{name}} {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str(self.value())
+    }
+}
+
+impl fmt::Debug for {{name}} {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str(self.value())
+    }
+}
+
+impl FromStr for {{name}} {
+    type Err = {{name}}Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.as_ref() {
+            {{#each enums as |enum| ~}}
+            {{enum.value}} => Ok({{../name}}::{{enum.key}}),
+            {{/each~}}
+            other => Err({{name}}Error::Invalid{{name}} {
+                value: other.to_owned(),
+            }),
+        }
+    }
+}
+
+struct {{name}}Visitor;
+
+impl<'de> Visitor<'de> for {{name}}Visitor {
+    type Value = {{name}};
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("a queue value expected")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        value
+            .parse::<{{name}}>()
+            .map_err(|err| de::Error::custom(err.to_string()))
+    }
+
+    fn visit_string<E>(self, value: String) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        self.visit_str(value.as_ref())
+    }
+}
+
+impl Serialize for {{name}} {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl<'de> Deserialize<'de> for {{name}} {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        deserializer.deserialize_any({{name}}Visitor)
+    }
+}
+
+#[derive(Debug, Fail)]
+pub enum {{name}}Error {
+    #[fail(display = "invalid {{name}}: {}", value)]
+    Invalid{{name}} { value: String },
+}
