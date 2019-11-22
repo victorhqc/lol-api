@@ -6,8 +6,6 @@ mod error;
 mod fetch;
 mod files;
 
-mod my_file;
-
 pub use self::error::*;
 pub use self::fetch::*;
 
